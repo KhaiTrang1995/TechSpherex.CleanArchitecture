@@ -1,0 +1,17 @@
+**/.vs
+**/bin
+**/obj
+**/node_modules
+**/.git
+**/.gitignore
+**/docker
+**/docs
+**/scripts
+**/tests
+**/*.md
+**/*.sln
+**/UpgradeLog.htm
+.editorconfig
+.dockerignore
+Dockerfile
+docker-compose*.yml

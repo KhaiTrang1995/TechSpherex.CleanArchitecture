@@ -1,0 +1,17 @@
+# ============================================================
+# Grafana Dashboard Provisioning — TechSpherex
+# ============================================================
+
+apiVersion: 1
+
+providers:
+  - name: TechSpherex
+    orgId: 1
+    folder: TechSpherex
+    type: file
+    disableDeletion: false
+    editable: true
+    updateIntervalSeconds: 30
+    options:
+      path: /etc/grafana/provisioning/dashboards/json
+      foldersFromFilesStructure: true

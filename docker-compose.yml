@@ -1,0 +1,255 @@
+# ============================================================
+# TechSpherex Clean Architecture — Docker Compose
+# ============================================================
+# Usage:
+#   docker compose up -d                      # Core: API + PostgreSQL + Redis
+#   docker compose --profile elk up -d        # + ELK Stack (Elasticsearch, Logstash, Kibana)
+#   docker compose --profile grafana up -d    # + Grafana Stack (Loki, Grafana, Tempo, Prometheus)
+#   docker compose --profile tools up -d      # + pgAdmin + RedisInsight
+# ============================================================
+
+services:
+
+  # ─────────────────────────── API ───────────────────────────
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techspherex-api
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      # Aspire uses these connection string names (must match Program.cs: "TechSpherex-db", "TechSpherex-cache")
+      ConnectionStrings__TechSpherex-db: "Host=postgres;Port=5432;Database=TechSpherex_cleanarch;Username=TechSpherex;Password=TechSpherex_password"
+      ConnectionStrings__TechSpherex-cache: "redis:6379"
+      Jwt__Secret: "CHANGE-THIS-TO-A-SECURE-SECRET-KEY-AT-LEAST-32-CHARS"
+      Jwt__Issuer: "TechSpherex.CleanArchitecture"
+      Jwt__Audience: "TechSpherex.CleanArchitecture"
+      Serilog__WriteTo__1__Name: "Elasticsearch"
+      Serilog__WriteTo__1__Args__nodeUris: "http://elasticsearch:9200"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  # ─────────────────────── PostgreSQL ────────────────────────
+  postgres:
+    image: postgres:17-alpine
+    container_name: techspherex-postgres
+    environment:
+      POSTGRES_USER: TechSpherex
+      POSTGRES_PASSWORD: TechSpherex_password
+      POSTGRES_DB: TechSpherex_cleanarch
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U TechSpherex -d TechSpherex_cleanarch"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  # ──────────────────────── Redis ────────────────────────────
+  redis:
+    image: redis:7-alpine
+    container_name: techspherex-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  # ──────────────────────── pgAdmin (tools) ──────────────────
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: techspherex-pgadmin
+    profiles: [tools]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@techspherex.dev
+      PGADMIN_DEFAULT_PASSWORD: Admin@123
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - techspherex-net
+
+  # ─────────────────────── RedisInsight (tools) ──────────────
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: techspherex-redisinsight
+    profiles: [tools]
+    ports:
+      - "5540:5540"
+    depends_on:
+      - redis
+    networks:
+      - techspherex-net
+
+  # ============================================================
+  #  ELK STACK (profile: elk)
+  # ============================================================
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: techspherex-elasticsearch
+    profiles: [elk]
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.17.0
+    container_name: techspherex-logstash
+    profiles: [elk]
+    volumes:
+      - ./docker/elk/logstash/pipeline:/usr/share/logstash/pipeline:ro
+    ports:
+      - "5044:5044"
+      - "31311:31311"
+    environment:
+      - "LS_JAVA_OPTS=-Xms256m -Xmx256m"
+    depends_on:
+      - elasticsearch
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    container_name: techspherex-kibana
+    profiles: [elk]
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  # ============================================================
+  #  GRAFANA STACK (profile: grafana)
+  # ============================================================
+
+  loki:
+    image: grafana/loki:3.4.2
+    container_name: techspherex-loki
+    profiles: [grafana]
+    volumes:
+      - ./docker/grafana/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  tempo:
+    image: grafana/tempo:2.7.1
+    container_name: techspherex-tempo
+    profiles: [grafana]
+    volumes:
+      - ./docker/grafana/tempo-config.yml:/etc/tempo/config.yaml:ro
+      - tempo_data:/var/tempo
+    ports:
+      - "3200:3200"       # Tempo API
+      - "4317:4317"       # OTLP gRPC
+      - "4318:4318"       # OTLP HTTP
+    command: -config.file=/etc/tempo/config.yaml
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.2.1
+    container_name: techspherex-prometheus
+    profiles: [grafana]
+    volumes:
+      - ./docker/grafana/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.5.2
+    container_name: techspherex-grafana
+    profiles: [grafana]
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=Admin@123
+      - GF_USERS_ALLOW_SIGN_UP=false
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./docker/grafana/provisioning:/etc/grafana/provisioning:ro
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      - loki
+      - tempo
+      - prometheus
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+  # ============================================================
+  #  OpenTelemetry Collector (shared by elk & grafana)
+  # ============================================================
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.120.0
+    container_name: techspherex-otel-collector
+    profiles: [elk, grafana]
+    volumes:
+      - ./docker/otel/otel-collector-config.yml:/etc/otelcol-contrib/config.yaml:ro
+    ports:
+      - "4320:4317"     # OTLP gRPC (host-mapped)
+      - "4321:4318"     # OTLP HTTP (host-mapped)
+    networks:
+      - techspherex-net
+    restart: unless-stopped
+
+# ──────────────────────── Volumes ────────────────────────────
+volumes:
+  postgres_data:
+  redis_data:
+  elasticsearch_data:
+  loki_data:
+  tempo_data:
+  prometheus_data:
+  grafana_data:
+
+# ──────────────────────── Networks ───────────────────────────
+networks:
+  techspherex-net:
+    driver: bridge

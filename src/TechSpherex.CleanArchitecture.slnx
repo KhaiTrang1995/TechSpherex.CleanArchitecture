@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Domain/TechSpherex.CleanArchitecture.Domain.csproj" />
+    <Project Path="Application/TechSpherex.CleanArchitecture.Application.csproj" />
+    <Project Path="Infrastructure/TechSpherex.CleanArchitecture.Infrastructure.csproj" />
+    <Project Path="Api/TechSpherex.CleanArchitecture.Api.csproj" />
+  </Folder>
+  <Folder Name="/aspire/">
+    <Project Path="AppHost/TechSpherex.CleanArchitecture.AppHost.csproj" />
+    <Project Path="ServiceDefaults/TechSpherex.CleanArchitecture.ServiceDefaults.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="../tests/Architecture.Tests/TechSpherex.CleanArchitecture.Architecture.Tests.csproj" />
+    <Project Path="../tests/Application.UnitTests/TechSpherex.CleanArchitecture.Application.UnitTests.csproj" />
+  </Folder>
+</Solution>
