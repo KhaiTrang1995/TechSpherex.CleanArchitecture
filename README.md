@@ -422,6 +422,115 @@ Follow the Todos pattern — four simple steps:
 
 ---
 
+## 🎓 Education Roadmap
+
+> **New to Clean Architecture?** Follow this learning path from the innermost layer outward. Each step builds on the previous one — just like the dependency rule itself.
+
+```
+  Step 1          Step 2            Step 3              Step 4           Step 5
+ ┌────────┐    ┌─────────────┐   ┌────────────────┐   ┌──────────┐   ┌──────────────┐
+ │ Domain │ ──▶│ Application │──▶│ Infrastructure │──▶│   Api    │──▶│ DevOps / Ops │
+ └────────┘    └─────────────┘   └────────────────┘   └──────────┘   └──────────────┘
+   Core           Use Cases        Implementations      Endpoints      Docker, CI/CD
+```
+
+### Step 1 — 🏛️ Domain Layer _(start here!)_
+
+> _"Understand the heart of the application — the business rules."_
+
+| What to Read | Why |
+|:-------------|:----|
+| `Domain/Entities/` | Learn how entities are modeled — `TodoItem`, `AuditableEntity` |
+| `Domain/Interfaces/` | See the **contracts** (e.g., `IRepository<T>`, `ITenantProvider`) — no implementation details here |
+| `Domain/Common/Result.cs` | Understand the **Result pattern** — how errors are handled without exceptions |
+| `Domain/Common/ITenantEntity.cs` | See how multi-tenancy is declared at the domain level |
+
+🎯 **Key takeaway:** Domain has **zero NuGet dependencies**. It defines *what* the system does, not *how*.
+
+### Step 2 — 📋 Application Layer
+
+> _"Learn how use cases orchestrate domain logic."_
+
+| What to Read | Why |
+|:-------------|:----|
+| `Application/Features/Todos/` | Full CQRS example — Commands, Queries, Handlers, Validators |
+| `Application/Features/Todos/Commands/CreateTodo/` | Follow a **Command** from DTO → Handler → Result |
+| `Application/Features/Todos/Queries/GetTodos/` | Follow a **Query** with pagination |
+| `Application/Common/` | Shared behaviors, interfaces, pagination models |
+| `Application/Agents/` | See how Skill Agent abstractions are defined (provider-agnostic AI) |
+
+🎯 **Key takeaway:** Application depends **only** on Domain. It defines *what happens* when a user action occurs.
+
+### Step 3 — 🔧 Infrastructure Layer
+
+> _"See how contracts become concrete implementations."_
+
+| What to Read | Why |
+|:-------------|:----|
+| `Infrastructure/Persistence/AppDbContext.cs` | EF Core setup, multi-tenant query filters, audit fields |
+| `Infrastructure/Persistence/Configurations/` | Entity-to-table mapping with Fluent API |
+| `Infrastructure/Persistence/Repositories/` | Generic `Repository<T>` implementing `IRepository<T>` from Domain |
+| `Infrastructure/Identity/` | ASP.NET Identity + JWT token generation |
+| `Infrastructure/Caching/` | HybridCache implementation (L1 + L2) |
+| `Infrastructure/DependencyInjection.cs` | **How everything is wired together** — study this carefully |
+
+🎯 **Key takeaway:** This is where the **Dependency Inversion Principle** shines — Infrastructure implements Domain interfaces.
+
+### Step 4 — 🚀 Api Layer
+
+> _"Connect everything to the outside world."_
+
+| What to Read | Why |
+|:-------------|:----|
+| `Api/Program.cs` | The **composition root** — where all layers are registered |
+| `Api/Endpoints/` | Minimal API endpoint groups — see how requests flow in |
+| `Api/Middleware/` | Global exception handling, tenant resolution |
+| `Api/Extensions/` | Service registration helpers, OpenAPI config |
+
+🎯 **Key takeaway:** Api is the **entry point** but contains **zero business logic**. It only maps HTTP → Application.
+
+### Step 5 — 🐳 DevOps & Orchestration
+
+> _"Understand how the app runs in real environments."_
+
+| What to Read | Why |
+|:-------------|:----|
+| `AppHost/Program.cs` | .NET Aspire orchestration — how services are composed |
+| `ServiceDefaults/` | OpenTelemetry, health checks, resilience defaults |
+| `Dockerfile` | Multi-stage build — JIT vs Native AOT |
+| `docker-compose.yml` | Full stack with profiles (ELK, Grafana, tools) |
+| `docker/` | Logstash, Grafana, OTel Collector configs |
+
+🎯 **Key takeaway:** DevOps config is **separate** from application code — clean boundary.
+
+### 🧪 Bonus — Tests
+
+> _"Read tests to verify your understanding."_
+
+| What to Read | Why |
+|:-------------|:----|
+| `tests/Architecture.Tests/` | **Must-read!** 9 tests that enforce dependency rules between layers |
+| `tests/Application.UnitTests/` | See how handlers are tested in isolation with mocks |
+
+### 📖 Suggested Reading Order (TL;DR)
+
+```
+1.  Domain/Common/Result.cs              → Understand error handling
+2.  Domain/Entities/TodoItem.cs          → See a real entity
+3.  Domain/Interfaces/                   → Learn the contracts
+4.  Application/Features/Todos/          → Follow a full CQRS feature
+5.  Infrastructure/DependencyInjection.cs→ See how DI wires everything
+6.  Infrastructure/Persistence/          → See DB implementation
+7.  Api/Program.cs                       → The composition root
+8.  Api/Endpoints/TodoEndpoints.cs       → HTTP → Application mapping
+9.  tests/Architecture.Tests/            → Verify the rules
+10. Dockerfile + docker-compose.yml      → Production deployment
+```
+
+> 💡 **Pro tip:** After reading the Todos feature end-to-end, try adding a new **Product** feature by following the [Adding Features Guide](docs/adding-features.md). That's the best way to solidify your understanding!
+
+---
+
 ## ❓ Troubleshooting
 
 <details>
