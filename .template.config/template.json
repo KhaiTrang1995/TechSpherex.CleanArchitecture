@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json.schemastore.org/template",
+  "author": "TechSpherex",
+  "classifications": [ "Web", "Api", "Clean Architecture" ],
+  "name": "TechSpherex Clean Architecture Template",
+  "identity": "TechSpherex.CleanArchitecture.Template",
+  "shortName": "ts-clean-arch",
+  "tags": {
+    "language": "C#",
+    "type": "project"
+  },
+  "sourceName": "TechSpherex.CleanArchitecture",
+  "preferNameDirectory": true,
+  "sources": [
+    {
+      "modifiers": [
+        {
+          "exclude": [
+            "**/bin/**",
+            "**/obj/**",
+            "**/.git/**",
+            "**/.vs/**",
+            "**/.vscode/**",
+            "**/.github/**",
+            "**/_ReSharper.Caches/**",
+            "**/*.user",
+            "**/*.lock.json",
+            "**/*.nupkg",
+            "**/node_modules/**",
+            ".template.config/**",
+            "template.csproj"
+          ]
+        }
+      ]
+    }
+  ]
+}

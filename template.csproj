@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <PackageType>Template</PackageType>
+    <PackageId>TechSpherex.CleanArchitecture.Template</PackageId>
+    <Title>TechSpherex Clean Architecture Template</Title>
+    <Authors>TechSpherex</Authors>
+    <Description>A production-ready Clean Architecture starter template for .NET 10. Includes Aspire, Multi-tenancy, AI Agents, and Observability stack.</Description>
+    <PackageTags>dotnet-new;templates;clean-architecture;dotnet10;webapi;aspire;postgresql</PackageTags>
+    <PackageProjectUrl>https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Version>2.0.0</Version>
+    
+    <TargetFramework>net10.0</TargetFramework>
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <ContentTargetFolders>content</ContentTargetFolders>
+    <NoDefaultExcludes>true</NoDefaultExcludes>
+    <NoWarn>$(NoWarn);NU5128</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="**\*" Exclude="**\bin\**;**\obj\**;**\.git\**;**\.vs\**;**\.vscode\**;**\*.nupkg;template.csproj;**\.template.config\**" />
+    <Content Include=".template.config\**\*" TargetPath="content\.template.config" />
+  </ItemGroup>
+
+</Project>
