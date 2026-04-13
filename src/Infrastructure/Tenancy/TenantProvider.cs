@@ -7,17 +7,12 @@ using Microsoft.AspNetCore.Http;
 /// Resolution order: X-Tenant-Id header → JWT claim → Default tenant.
 /// </summary>
 namespace TechSpherex.CleanArchitecture.Infrastructure.Tenancy;
-public sealed class TenantProvider : ITenantProvider
+public sealed class TenantProvider(IHttpContextAccessor httpContextAccessor) : ITenantProvider
 {
     private const string TenantHeader = "X-Tenant-Id";
     private const string TenantClaimType = "tenant_id";
 
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public TenantProvider(IHttpContextAccessor httpContextAccessor)
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     public string? TenantId => ResolveTenantId();
 

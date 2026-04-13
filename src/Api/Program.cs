@@ -1,3 +1,6 @@
+using Microsoft.Extensions.Caching.Hybrid;
+using Scalar.AspNetCore;
+using Serilog;
 using TechSpherex.CleanArchitecture.Api.Endpoints;
 using TechSpherex.CleanArchitecture.Api.Extensions;
 using TechSpherex.CleanArchitecture.Application;
@@ -5,8 +8,6 @@ using TechSpherex.CleanArchitecture.Infrastructure;
 using TechSpherex.CleanArchitecture.Infrastructure.Persistence;
 using TechSpherex.CleanArchitecture.Infrastructure.Tenancy;
 using TechSpherex.CleanArchitecture.ServiceDefaults;
-using Scalar.AspNetCore;
-using Serilog;
 
 Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
@@ -28,6 +29,15 @@ try
 
     // Aspire-managed Redis (for HybridCache L2)
     builder.AddRedisDistributedCache("TechSpherex-cache");
+
+    builder.Services.AddHybridCache(options =>
+    {
+        options.DefaultEntryOptions = new HybridCacheEntryOptions
+        {
+            LocalCacheExpiration = TimeSpan.FromMinutes(5),
+            Expiration = TimeSpan.FromMinutes(30)
+        };
+    });
 
     // Application & Infrastructure
     builder.Services.AddApplication();
@@ -83,6 +93,7 @@ try
     // Global exception handler
     app.UseExceptionHandler();
     app.UseStatusCodePages();
+    app.UseHttpsRedirection();
 
     if (app.Environment.IsDevelopment())
     {

@@ -8,16 +8,10 @@ using Microsoft.Extensions.Logging;
 /// Must be registered before authentication middleware so tenant context is available early.
 /// </summary>
 namespace TechSpherex.CleanArchitecture.Infrastructure.Tenancy;
-public sealed class TenantMiddleware
+public sealed class TenantMiddleware(RequestDelegate next, ILogger<TenantMiddleware> logger)
 {
-    private readonly RequestDelegate _next;
-    private readonly ILogger<TenantMiddleware> _logger;
-
-    public TenantMiddleware(RequestDelegate next, ILogger<TenantMiddleware> logger)
-    {
-        _next = next;
-        _logger = logger;
-    }
+    private readonly RequestDelegate _next = next;
+    private readonly ILogger<TenantMiddleware> _logger = logger;
 
     public async Task InvokeAsync(HttpContext context, ITenantProvider tenantProvider)
     {
