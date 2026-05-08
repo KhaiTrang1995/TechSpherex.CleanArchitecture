@@ -1,8 +1,8 @@
-using Microsoft.Extensions.Caching.Hybrid;
 using Scalar.AspNetCore;
 using Serilog;
 using TechSpherex.CleanArchitecture.Api.Endpoints;
 using TechSpherex.CleanArchitecture.Api.Extensions;
+using TechSpherex.CleanArchitecture.Api.GrpcServices;
 using TechSpherex.CleanArchitecture.Application;
 using TechSpherex.CleanArchitecture.Infrastructure;
 using TechSpherex.CleanArchitecture.Infrastructure.Persistence;
@@ -30,18 +30,12 @@ try
     // Aspire-managed Redis (for HybridCache L2)
     builder.AddRedisDistributedCache("TechSpherex-cache");
 
-    builder.Services.AddHybridCache(options =>
-    {
-        options.DefaultEntryOptions = new HybridCacheEntryOptions
-        {
-            LocalCacheExpiration = TimeSpan.FromMinutes(5),
-            Expiration = TimeSpan.FromMinutes(30)
-        };
-    });
-
-    // Application & Infrastructure
+    // Application & Infrastructure (includes HybridCache, CORS, RuleEngine)
     builder.Services.AddApplication();
     builder.Services.AddInfrastructure(builder.Configuration);
+
+    // gRPC services
+    builder.Services.AddGrpc();
 
     // Global exception handling
     builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
@@ -109,16 +103,22 @@ try
     // Multi-tenant middleware (before auth so tenant context is available)
     app.UseMiddleware<TenantMiddleware>();
 
+    // CORS (before auth)
+    app.UseCors();
+
     app.UseAuthentication();
     app.UseAuthorization();
 
     app.UseSerilogRequestLogging();
 
-    // Map endpoints
+    // Map REST endpoints
     // Copyright (c) 2026 TechSpherex
     app.MapIdentityEndpoints();
     app.MapTodoEndpoints();
     app.MapAgentEndpoints();
+
+    // Map gRPC services
+    app.MapGrpcService<TodoGrpcService>();
 
     // Aspire default endpoints (health, alive)
     app.MapDefaultEndpoints();
@@ -139,3 +139,4 @@ finally
 {
     await Log.CloseAndFlushAsync();
 }
+

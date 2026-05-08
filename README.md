@@ -42,6 +42,11 @@
     <td>🔐 <strong>JWT Auth</strong><br/><sub>Identity + refresh tokens + role-based</sub></td>
     <td>🚀 <strong>HybridCache</strong><br/><sub>L1 in-memory + L2 Redis with stampede protection</sub></td>
   </tr>
+  <tr>
+    <td>🌐 <strong>CORS</strong><br/><sub>Config-driven cross-origin policy</sub></td>
+    <td>⚙️ <strong>Rule Engine</strong><br/><sub>Config-driven business rules with AND/OR logic</sub></td>
+    <td>📡 <strong>gRPC</strong><br/><sub>High-performance binary protocol for service-to-service</sub></td>
+  </tr>
 </table>
 
 
@@ -55,14 +60,17 @@
 |:------|:-----------|
 | **Architecture** | Clean Architecture (Domain → Application → Infrastructure → Api) |
 | **Runtime** | .NET 10 / C# 14 |
-| **API** | Minimal APIs with `TypedResults` |
+| **API** | Minimal APIs with `TypedResults` + gRPC (Protobuf) |
 | **CQRS** | Manual handlers — zero dependencies, zero licensing risk |
 | **Validation** | FluentValidation 12 + Result pattern |
 | **Error Handling** | `ProblemDetails` (RFC 9457) + global exception handler |
 | **Database** | EF Core 10 + PostgreSQL |
-| **Caching** | Microsoft `HybridCache` (L1 in-memory + L2 Redis) |
+| **Caching** | `ICacheService` → Microsoft `HybridCache` (L1 RAM + L2 Redis) |
 | **Auth** | ASP.NET Identity + JWT Bearer with refresh tokens |
+| **CORS** | Config-driven cross-origin policy (`appsettings.json`) |
 | **Multi-Tenancy** | Shared-table strategy with EF Core global query filters |
+| **Rule Engine** | Config-driven business rules with AND/OR logic, priority ordering |
+| **gRPC** | `Grpc.AspNetCore` — binary protocol reusing CQRS handlers |
 | **AI / Agents** | Skill Agents pattern (pluggable — OpenAI, Ollama, Semantic Kernel) |
 | **API Docs** | Scalar (modern OpenAPI UI) |
 | **Logging** | Serilog 10 + Elasticsearch sink |
@@ -76,25 +84,25 @@
 ## 🏛️ Architecture
 
 ```
-┌──────────────────────────────────────────────────┐
-│                    Api Layer                      │
-│      Endpoints · Middleware · OpenAPI · Scalar    │
-└──────────────────┬───────────────────────────────┘
-                   │ depends on
-┌──────────────────▼───────────────────────────────┐
-│              Infrastructure Layer                 │
-│    EF Core · Identity · JWT · Cache · Tenancy    │
-└──────────────────┬───────────────────────────────┘
-                   │ depends on
-┌──────────────────▼───────────────────────────────┐
-│              Application Layer                    │
-│  CQRS Handlers · Validators · Agent Abstractions │
-└──────────────────┬───────────────────────────────┘
-                   │ depends on
-┌──────────────────▼───────────────────────────────┐
-│                Domain Layer                       │
-│   Entities · Value Objects · Result · Interfaces  │
-└──────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────┐
+│                        Api Layer                          │
+│  REST Endpoints · gRPC Services · Middleware · Scalar     │
+└──────────────────────┬────────────────────────────────────┘
+                       │ depends on
+┌──────────────────────▼────────────────────────────────────┐
+│                  Infrastructure Layer                     │
+│  EF Core · Identity · JWT · Cache · CORS · Rule Engine   │
+└──────────────────────┬────────────────────────────────────┘
+                       │ depends on
+┌──────────────────────▼────────────────────────────────────┐
+│                  Application Layer                        │
+│  CQRS Handlers · Validators · Cache/Rule Abstractions    │
+└──────────────────────┬────────────────────────────────────┘
+                       │ depends on
+┌──────────────────────▼────────────────────────────────────┐
+│                    Domain Layer                           │
+│  Entities · Value Objects · Result · Business Rules       │
+└───────────────────────────────────────────────────────────┘
 ```
 
 > **Dependency rule:** Each layer only depends on the layer below it. Domain has **zero** external dependencies. Architecture tests enforce this at build time (9 tests).
@@ -106,10 +114,16 @@
 ```
 clean-architecture-template/
 ├── src/
-│   ├── Domain/                    # Entities, value objects, ITenantEntity
+│   ├── Domain/                    # Entities, value objects, business rules
+│   │   └── Common/Rules/          # IBusinessRule, BusinessRuleValidator
 │   ├── Application/               # CQRS handlers, validators, Skill Agents
-│   ├── Infrastructure/            # EF Core, Identity, JWT, caching, tenancy
-│   ├── Api/                       # Minimal API endpoints, Scalar, middleware
+│   │   └── Abstractions/          # ICacheService, IRuleEngine, ICommand/IQuery
+│   ├── Infrastructure/            # EF Core, Identity, JWT, CORS, cache, rules
+│   │   ├── Caching/               # HybridCacheService (L1 RAM + L2 Redis)
+│   │   └── Rules/                 # Config-driven Rule Engine implementation
+│   ├── Api/                       # REST endpoints + gRPC services
+│   │   ├── Protos/                # Protocol Buffer definitions (todo.proto)
+│   │   └── GrpcServices/          # gRPC service implementations
 │   ├── AppHost/                   # .NET Aspire orchestration
 │   └── ServiceDefaults/           # OpenTelemetry, health checks, resilience
 ├── tests/
@@ -298,6 +312,101 @@ curl -X POST http://localhost:8080/api/agents/execute \
 
 ---
 
+## 🌐 CORS (Cross-Origin Resource Sharing)
+
+Fully **config-driven** CORS policy — no code changes needed per environment:
+
+```json
+"Cors": {
+  "AllowedOrigins": ["http://localhost:3000", "https://techspherex.com"],
+  "AllowedMethods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  "AllowedHeaders": ["*"],
+  "AllowCredentials": true
+}
+```
+
+Override per environment via `appsettings.Production.json` — zero code changes.
+
+---
+
+## ⚙️ Rule Engine
+
+Config-driven business rule evaluation loaded from `appsettings.json`:
+
+```json
+"RuleEngine": {
+  "RuleSets": {
+    "TodoCreation": {
+      "Operator": "And",
+      "Rules": [
+        { "Code": "Todo.TitleRequired", "Field": "Title", "Operator": "IsNotNull", "Message": "Todo title is required." },
+        { "Code": "Todo.TitleMinLength", "Field": "TitleLength", "Operator": ">=", "Value": "3", "Message": "Min 3 chars." }
+      ]
+    }
+  }
+}
+```
+
+**Supported operators:** `==`, `!=`, `>`, `<`, `>=`, `<=`, `Contains`, `StartsWith`, `EndsWith`, `IsNull`, `IsNotNull`
+
+**Usage in handlers:**
+
+```csharp
+public class CreateTodoHandler(IRuleEngine ruleEngine)
+{
+    public async Task<Result> HandleAsync(CreateTodoCommand cmd, CancellationToken ct)
+    {
+        var result = ruleEngine.Evaluate("TodoCreation", new Dictionary<string, object?>
+        {
+            ["Title"] = cmd.Title,
+            ["TitleLength"] = cmd.Title?.Length
+        });
+
+        if (!result.IsValid)
+            return Result.Failure(Error.Validation(
+                result.Violations[0].RuleCode,
+                result.Violations[0].Message));
+        // ...
+    }
+}
+```
+
+**Architecture:**
+- **Domain** — `IBusinessRule` + `BusinessRuleValidator` (entity self-validation)
+- **Application** — `IRuleEngine` abstraction + `RuleResult` DTO
+- **Infrastructure** — Full `RuleEngine` implementation with AND/OR logic, priority ordering
+
+---
+
+## 📡 gRPC Integration
+
+High-performance **binary protocol** for service-to-service communication. Reuses the **same CQRS handlers** as REST — zero business logic duplication.
+
+| gRPC RPC | REST Equivalent | Description |
+|:---------|:----------------|:------------|
+| `GetTodo` | `GET /api/todos/{id}` | Get a single todo |
+| `GetAllTodos` | `GET /api/todos` | List with pagination |
+| `CreateTodo` | `POST /api/todos` | Create new todo |
+| `UpdateTodo` | `PUT /api/todos/{id}` | Update existing |
+| `CompleteTodo` | `PATCH /api/todos/{id}/complete` | Mark completed |
+| `DeleteTodo` | `DELETE /api/todos/{id}` | Delete a todo |
+
+**Proto file:** `Api/Protos/todo.proto`
+
+**Kestrel config** (HTTP/2 for gRPC):
+
+```json
+"Kestrel": {
+  "EndpointDefaults": {
+    "Protocols": "Http1AndHttp2"
+  }
+}
+```
+
+> REST (HTTP/1.1) and gRPC (HTTP/2) run on the **same port** — no separate server needed.
+
+---
+
 ## 📊 Observability
 
 Three levels of observability, from development to production:
@@ -369,6 +478,8 @@ docker compose --profile grafana up -d --build
 
 The template includes a complete **Todos** CRUD feature as a reference implementation:
 
+**REST API:**
+
 | Endpoint | Method | Auth | Description |
 |:---------|:-------|:----:|:------------|
 | `/api/todos` | GET | 🔒 | Get all todos (paginated) |
@@ -378,6 +489,8 @@ The template includes a complete **Todos** CRUD feature as a reference implement
 | `/api/todos/{id}/complete` | PATCH | 🔒 | Mark as completed |
 | `/api/todos/{id}` | DELETE | 🔒 | Delete a todo |
 
+**gRPC Service:** All 6 operations are also available via `TodoService` gRPC (see `Api/Protos/todo.proto`).
+
 ### Adding a New Feature
 
 Follow the Todos pattern — four simple steps:
@@ -386,6 +499,7 @@ Follow the Todos pattern — four simple steps:
 2. **Application** — Create feature folder in `Application/Features/YourFeature/` with Command/Query + Handler + Validator
 3. **Infrastructure** — Add EF Core configuration in `Infrastructure/Persistence/Configurations/`
 4. **Api** — Add endpoint group in `Api/Endpoints/` and register in `Program.cs`
+5. _(Optional)_ **gRPC** — Add proto in `Api/Protos/` and service in `Api/GrpcServices/`
 
 📖 [Adding Features Guide](docs/adding-features.md) — includes a complete **Product** feature walkthrough
 
@@ -398,6 +512,10 @@ Follow the Todos pattern — four simple steps:
 | **Manual CQRS** over MediatR | Zero licensing risk — MediatR is commercial since v13. Learn the pattern, not a library. |
 | **Scalar** over Swagger UI | Modern, faster, better DX. Swagger UI is legacy. |
 | **HybridCache** over IMemoryCache | Built-in stampede protection, L1+L2 cache layers, automatic serialization. |
+| **ICacheService** abstraction | Application handlers never depend on infrastructure cache packages directly. |
+| **Config-driven CORS** | Environment-specific origins via `appsettings.json` — no code changes for production. |
+| **Config-driven Rule Engine** | Business rules as data, not code — change rules without redeployment. |
+| **gRPC** alongside REST | Binary protocol for internal services, REST for external clients — same CQRS handlers. |
 | **Result pattern** over exceptions | Explicit error handling, no hidden control flow, better API contracts. |
 | **Shared-table tenancy** | Simple, no migration complexity, cost-efficient — good for most SaaS apps. |
 | **Interface-only agents** | No LLM provider lock-in. Swap OpenAI, Ollama, or Semantic Kernel freely. |
@@ -471,8 +589,9 @@ Follow the Todos pattern — four simple steps:
 | `Infrastructure/Persistence/Configurations/` | Entity-to-table mapping with Fluent API |
 | `Infrastructure/Persistence/Repositories/` | Generic `Repository<T>` implementing `IRepository<T>` from Domain |
 | `Infrastructure/Identity/` | ASP.NET Identity + JWT token generation |
-| `Infrastructure/Caching/` | HybridCache implementation (L1 + L2) |
-| `Infrastructure/DependencyInjection.cs` | **How everything is wired together** — study this carefully |
+| `Infrastructure/Caching/` | HybridCache implementation + ICacheService abstraction |
+| `Infrastructure/Rules/` | Config-driven Rule Engine loaded from appsettings |
+| `Infrastructure/DependencyInjection.cs` | **How everything is wired together** (CORS, cache, rules) — study this carefully |
 
 🎯 **Key takeaway:** This is where the **Dependency Inversion Principle** shines — Infrastructure implements Domain interfaces.
 
@@ -484,6 +603,8 @@ Follow the Todos pattern — four simple steps:
 |:-------------|:----|
 | `Api/Program.cs` | The **composition root** — where all layers are registered |
 | `Api/Endpoints/` | Minimal API endpoint groups — see how requests flow in |
+| `Api/GrpcServices/` | gRPC services reusing the same CQRS handlers as REST |
+| `Api/Protos/` | Protocol Buffer definitions for gRPC contracts |
 | `Api/Middleware/` | Global exception handling, tenant resolution |
 | `Api/Extensions/` | Service registration helpers, OpenAPI config |
 

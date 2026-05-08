@@ -1,11 +1,15 @@
 
 using System.Text;
+using TechSpherex.CleanArchitecture.Application.Abstractions.Caching;
 using TechSpherex.CleanArchitecture.Application.Abstractions.Data;
 using TechSpherex.CleanArchitecture.Application.Abstractions.Identity;
+using TechSpherex.CleanArchitecture.Application.Abstractions.Rules;
 using TechSpherex.CleanArchitecture.Application.Abstractions.Tenancy;
 using TechSpherex.CleanArchitecture.Domain.Entities;
+using TechSpherex.CleanArchitecture.Infrastructure.Caching;
 using TechSpherex.CleanArchitecture.Infrastructure.Identity;
 using TechSpherex.CleanArchitecture.Infrastructure.Persistence;
+using TechSpherex.CleanArchitecture.Infrastructure.Rules;
 using TechSpherex.CleanArchitecture.Infrastructure.Tenancy;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -22,7 +26,9 @@ public static class DependencyInjection
         services.AddPersistence();
         services.AddAuth(configuration);
         services.AddCachingServices();
+        services.AddCorsPolicy(configuration);
         services.AddMultiTenancy();
+        services.AddRuleEngineServices(configuration);
 
         return services;
     }
@@ -84,10 +90,58 @@ public static class DependencyInjection
                 LocalCacheExpiration = TimeSpan.FromMinutes(2)
             };
         });
+
+        // Register the clean cache abstraction backed by HybridCache
+        services.AddSingleton<ICacheService, HybridCacheService>();
+    }
+
+    private static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
+    {
+        var corsSection = configuration.GetSection("Cors");
+        var allowedOrigins = corsSection.GetSection("AllowedOrigins").Get<string[]>() ?? ["*"];
+        var allowedMethods = corsSection.GetSection("AllowedMethods").Get<string[]>() ?? ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
+        var allowedHeaders = corsSection.GetSection("AllowedHeaders").Get<string[]>() ?? ["*"];
+        var allowCredentials = corsSection.GetValue("AllowCredentials", false);
+
+        services.AddCors(options =>
+        {
+            options.AddDefaultPolicy(policy =>
+            {
+                if (allowedOrigins.Contains("*") && !allowCredentials)
+                {
+                    policy.AllowAnyOrigin();
+                }
+                else
+                {
+                    policy.WithOrigins(allowedOrigins);
+                }
+
+                if (allowedMethods.Contains("*"))
+                    policy.AllowAnyMethod();
+                else
+                    policy.WithMethods(allowedMethods);
+
+                if (allowedHeaders.Contains("*"))
+                    policy.AllowAnyHeader();
+                else
+                    policy.WithHeaders(allowedHeaders);
+
+                if (allowCredentials)
+                    policy.AllowCredentials();
+
+                policy.SetPreflightMaxAge(TimeSpan.FromMinutes(10));
+            });
+        });
     }
 
     private static void AddMultiTenancy(this IServiceCollection services)
     {
         services.AddScoped<ITenantProvider, TenantProvider>();
     }
+
+    private static void AddRuleEngineServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IRuleEngine, RuleEngine>();
+    }
 }
+

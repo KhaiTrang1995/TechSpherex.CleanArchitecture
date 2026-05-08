@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+option csharp_namespace = "TechSpherex.CleanArchitecture.Api.GrpcServices";
+
+package todo;
+
+// gRPC service for Todo operations – high-performance binary protocol
+// for service-to-service communication.
+service TodoService {
+  rpc GetTodo (GetTodoRequest) returns (TodoResponse);
+  rpc GetAllTodos (GetAllTodosRequest) returns (TodoListResponse);
+  rpc CreateTodo (CreateTodoRequest) returns (TodoResponse);
+  rpc UpdateTodo (UpdateTodoRequest) returns (TodoResponse);
+  rpc CompleteTodo (CompleteTodoRequest) returns (TodoResponse);
+  rpc DeleteTodo (DeleteTodoRequest) returns (DeleteTodoResponse);
+}
+
+message GetTodoRequest {
+  string id = 1;
+}
+
+message GetAllTodosRequest {
+  int32 page = 1;
+  int32 page_size = 2;
+}
+
+message CreateTodoRequest {
+  string title = 1;
+  optional string description = 2;
+}
+
+message UpdateTodoRequest {
+  string id = 1;
+  string title = 2;
+  optional string description = 3;
+}
+
+message CompleteTodoRequest {
+  string id = 1;
+}
+
+message DeleteTodoRequest {
+  string id = 1;
+}
+
+message TodoResponse {
+  string id = 1;
+  string title = 2;
+  optional string description = 3;
+  bool is_completed = 4;
+  string created_at = 5;
+  optional string completed_at = 6;
+}
+
+message TodoListResponse {
+  repeated TodoResponse items = 1;
+  int32 total_count = 2;
+  int32 page = 3;
+  int32 page_size = 4;
+}
+
+message DeleteTodoResponse {
+  bool success = 1;
+}
