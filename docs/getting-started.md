@@ -4,7 +4,7 @@
 
 | Tool | Version | Required |
 |------|---------|----------|
-| [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0+ | ✅ |
+| [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) | 11.0+ | ✅ |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | 4.x+ | ✅ |
 | IDE (VS 2022 / Rider / VS Code) | Latest | Recommended |
 
@@ -85,7 +85,7 @@ curl https://localhost:7200/api/todos \
 
 ```bash
 cd src
-dotnet test TechSpherex.CleanArchitecture.slnx
+dotnet test --solution TechSpherex.CleanArchitecture.slnx
 ```
 
 ### Test Coverage

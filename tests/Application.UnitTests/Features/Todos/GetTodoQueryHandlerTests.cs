@@ -40,6 +40,6 @@ public sealed class GetTodoQueryHandlerTests
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error!.Type.Should().Be(ErrorType.NotFound);
+        result.Error.Should().BeOfType<NotFoundError>();
     }
 }

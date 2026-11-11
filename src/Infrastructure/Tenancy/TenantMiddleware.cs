@@ -28,7 +28,7 @@ public sealed class TenantMiddleware(RequestDelegate next, ILogger<TenantMiddlew
                 title = "Forbidden",
                 status = 403,
                 detail = $"Tenant '{tenantId}' is not active."
-            });
+            }, context.RequestAborted);
             return;
         }
 

@@ -2,6 +2,44 @@
 
 All notable changes to the TechSpherex Clean Architecture Template will be documented in this file.
 
+## [3.0.0] - 2026-11-11
+
+### .NET 11 / C# 15
+- All projects target `net11.0`; `global.json` pins SDK 11.0.100 (`rollForward: latestFeature`)
+- Docker images moved to `sdk:11.0-alpine` / `aspnet:11.0-alpine`
+- ASP.NET Core, Microsoft.Extensions, HybridCache, OpenAPI packages on 11.0.0; Aspire 13.6.5;
+  OpenTelemetry 1.21; gRPC 2.85; Scalar 2.20; FluentValidation 12.2
+- OpenAPI document is now generated as OpenAPI 3.2 (ASP.NET Core 11 default)
+
+### Closed `Error` hierarchy (C# 15)
+- `Error` is a `closed record` with `NotFoundError`, `ValidationError`, `ConflictError`, `FailureError`
+- HTTP (`ResultExtensions`) and gRPC (`TodoGrpcService`) mappings switch on the error kind with no
+  discard arm, so the compiler reports any mapping that misses a newly added kind
+- **Breaking:** the `ErrorType` enum and `Error.Type` are removed. Replace `error.Type == ErrorType.NotFound`
+  with `error is NotFoundError`. The `Error.NotFound(...)` / `Validation` / `Conflict` / `Failure`
+  factories are unchanged
+
+### HTTP compression
+- Response compression and request decompression enabled, including Zstandard (new in ASP.NET Core 11)
+- HTTPS responses are compressed only when `ResponseCompression:EnableForHttps` is `true`
+
+### Tooling
+- Tests run on Microsoft.Testing.Platform (xunit.v3 4.x). **Breaking:** use
+  `dotnet test --solution src/TechSpherex.CleanArchitecture.slnx`
+- `.config/dotnet-ef.json` supplies project / startup project / context to `dotnet ef` (dotnet-ef 11+)
+- NSubstitute 6, FluentAssertions 8.11, Microsoft.NET.Test.Sdk 18.11
+
+### Code quality
+- `SonarAnalyzer.CSharp` runs in every project build; the solution builds with zero Sonar findings
+- Tenant query filter is built with expression trees instead of reflection-invoking a private method
+- CORS: a missing `Cors:AllowedOrigins` section now allows no cross-origin callers (was `*`)
+- OpenAPI contact URL comes from `OpenApi:ContactUrl` in configuration
+
+### Not changed on purpose
+- EF Core, the Npgsql provider and `Identity.EntityFrameworkCore` stay on 10.0.x: the Npgsql EF Core 11
+  provider is still a release candidate and Aspire's Npgsql integration pins 10.x
+- Runtime Async is still a preview feature in .NET 11 and is not enabled
+
 ## [2.0.0] - 2026-04-05
 
 ### 🐳 Docker Production Support

@@ -188,6 +188,16 @@ app.MapProductEndpoints();
 
 ## Step 7: Database Migration
 
+With `dotnet-ef` 11 or later, run from anywhere in the repository — the project, startup
+project and context come from `.config/dotnet-ef.json`:
+
+```bash
+dotnet ef migrations add AddProduct
+dotnet ef database update
+```
+
+With an older `dotnet-ef`, pass them explicitly:
+
 ```bash
 cd src/Api
 dotnet ef migrations add AddProduct --project ../Infrastructure

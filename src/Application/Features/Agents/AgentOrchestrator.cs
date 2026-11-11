@@ -19,7 +19,7 @@ public sealed class AgentOrchestrator : IAgentOrchestrator
         _logger = logger;
     }
 
-    public async Task<AgentResult> ExecuteAsync(AgentContext context, CancellationToken cancellationToken)
+    public async Task<AgentResult> ExecuteAsync(AgentContext context, CancellationToken cancellationToken = default)
     {
         _logger.LogInformation("Agent orchestrator received prompt: {Prompt}", context.Prompt);
 
@@ -49,7 +49,7 @@ public sealed class AgentOrchestrator : IAgentOrchestrator
         }
     }
 
-    public async Task<AgentResult> ExecuteSkillAsync(string skillId, AgentContext context, CancellationToken cancellationToken)
+    public async Task<AgentResult> ExecuteSkillAsync(string skillId, AgentContext context, CancellationToken cancellationToken = default)
     {
         var skill = _skills.FirstOrDefault(s => s.SkillId.Equals(skillId, StringComparison.OrdinalIgnoreCase));
 

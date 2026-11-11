@@ -128,11 +128,11 @@ public sealed class TodoGrpcService(
         CompletedAt = detail.CompletedAt?.ToString("O") ?? ""
     };
 
-    private static RpcException MapToRpcException(Error error) => error.Type switch
+    private static RpcException MapToRpcException(Error error) => new(new Status(error switch
     {
-        ErrorType.NotFound => new RpcException(new Status(StatusCode.NotFound, error.Message)),
-        ErrorType.Validation => new RpcException(new Status(StatusCode.InvalidArgument, error.Message)),
-        ErrorType.Conflict => new RpcException(new Status(StatusCode.AlreadyExists, error.Message)),
-        _ => new RpcException(new Status(StatusCode.Internal, error.Message))
-    };
+        NotFoundError => StatusCode.NotFound,
+        ValidationError => StatusCode.InvalidArgument,
+        ConflictError => StatusCode.AlreadyExists,
+        FailureError => StatusCode.Internal
+    }, error.Message));
 }

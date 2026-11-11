@@ -28,7 +28,7 @@ public static class DependencyInjection
         services.AddCachingServices();
         services.AddCorsPolicy(configuration);
         services.AddMultiTenancy();
-        services.AddRuleEngineServices(configuration);
+        services.AddRuleEngineServices();
 
         return services;
     }
@@ -98,7 +98,7 @@ public static class DependencyInjection
     private static void AddCorsPolicy(this IServiceCollection services, IConfiguration configuration)
     {
         var corsSection = configuration.GetSection("Cors");
-        var allowedOrigins = corsSection.GetSection("AllowedOrigins").Get<string[]>() ?? ["*"];
+        var allowedOrigins = corsSection.GetSection("AllowedOrigins").Get<string[]>() ?? [];
         var allowedMethods = corsSection.GetSection("AllowedMethods").Get<string[]>() ?? ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"];
         var allowedHeaders = corsSection.GetSection("AllowedHeaders").Get<string[]>() ?? ["*"];
         var allowCredentials = corsSection.GetValue("AllowCredentials", false);
@@ -109,7 +109,11 @@ public static class DependencyInjection
             {
                 if (allowedOrigins.Contains("*") && !allowCredentials)
                 {
+                    // Wildcard is an explicit opt-in via Cors:AllowedOrigins and is never
+                    // combined with credentials; appsettings.json ships a concrete origin list.
+#pragma warning disable S5122 // CORS policy should be restricted to trusted origins
                     policy.AllowAnyOrigin();
+#pragma warning restore S5122
                 }
                 else
                 {
@@ -139,7 +143,7 @@ public static class DependencyInjection
         services.AddScoped<ITenantProvider, TenantProvider>();
     }
 
-    private static void AddRuleEngineServices(this IServiceCollection services, IConfiguration configuration)
+    private static void AddRuleEngineServices(this IServiceCollection services)
     {
         services.AddSingleton<IRuleEngine, RuleEngine>();
     }

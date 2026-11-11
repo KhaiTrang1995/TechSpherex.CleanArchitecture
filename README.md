@@ -1,14 +1,14 @@
 <p align="center">
   <h1 align="center">🏗️ TechSpherex Clean Architecture Template</h1>
   <p align="center">
-    A production-ready <strong>Clean Architecture</strong> starter template for <strong>.NET 10</strong>
+    A production-ready <strong>Clean Architecture</strong> starter template for <strong>.NET 11</strong>
     <br />
     <em>Ship features from day one — not boilerplate.</em>
   </p>
 </p>
 
 <p align="center">
-  <a href="https://dotnet.microsoft.com"><img src="https://img.shields.io/badge/.NET-10.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 10" /></a>
+  <a href="https://dotnet.microsoft.com"><img src="https://img.shields.io/badge/.NET-11.0-512BD4?style=for-the-badge&logo=dotnet&logoColor=white" alt=".NET 11" /></a>
   <a href="https://www.docker.com"><img src="https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" /></a>
   <a href="docs/aot.md"><img src="https://img.shields.io/badge/Native_AOT-Supported-FF6F00?style=for-the-badge&logo=dotnet&logoColor=white" alt="AOT" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License" /></a>
@@ -59,12 +59,13 @@
 | Layer | Technology |
 |:------|:-----------|
 | **Architecture** | Clean Architecture (Domain → Application → Infrastructure → Api) |
-| **Runtime** | .NET 10 / C# 14 |
+| **Runtime** | .NET 11 / C# 15 |
 | **API** | Minimal APIs with `TypedResults` + gRPC (Protobuf) |
 | **CQRS** | Manual handlers — zero dependencies, zero licensing risk |
 | **Validation** | FluentValidation 12 + Result pattern |
-| **Error Handling** | `ProblemDetails` (RFC 9457) + global exception handler |
-| **Database** | EF Core 10 + PostgreSQL |
+| **Error Handling** | `ProblemDetails` (RFC 9457) + global exception handler + closed `Error` hierarchy (C# 15, compiler-checked mappings) |
+| **Compression** | Zstandard / Brotli / gzip response compression + request decompression |
+| **Database** | EF Core 10 (LTS) + PostgreSQL — moves to EF Core 11 when the Npgsql 11 provider is released |
 | **Caching** | `ICacheService` → Microsoft `HybridCache` (L1 RAM + L2 Redis) |
 | **Auth** | ASP.NET Identity + JWT Bearer with refresh tokens |
 | **CORS** | Config-driven cross-origin policy (`appsettings.json`) |
@@ -76,7 +77,7 @@
 | **Logging** | Serilog 10 + Elasticsearch sink |
 | **Observability** | .NET Aspire 13 + OpenTelemetry + ELK + Grafana |
 | **Containerization** | Docker multi-stage build (JIT + Native AOT) |
-| **Testing** | xUnit v3 + FluentAssertions + NSubstitute + NetArchTest |
+| **Testing** | xUnit v3 on Microsoft.Testing.Platform + FluentAssertions + NSubstitute + NetArchTest |
 | **Solution** | `.slnx` format + Central Package Management |
 
 ---
@@ -136,7 +137,7 @@ clean-architecture-template/
 ├── docs/                          # 9 comprehensive documentation guides
 ├── Dockerfile                     # Multi-stage build (JIT + AOT)
 ├── docker-compose.yml             # Full stack with 4 profiles
-├── Directory.Build.props          # .NET 10, C# latest, nullable
+├── Directory.Build.props          # .NET 11, C# latest, nullable
 ├── Directory.Packages.props       # Central Package Management
 ├── CHANGELOG.md                   # Version history
 └── README.md
@@ -150,7 +151,7 @@ clean-architecture-template/
 
 | Tool | Version | Required |
 |:-----|:--------|:--------:|
-| [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0) | 10.0+ | ✅ |
+| [.NET 11 SDK](https://dotnet.microsoft.com/download/dotnet/11.0) | 11.0+ | ✅ |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop/) | 4.x+ | ✅ |
 | IDE (VS 2026 / Rider / VS Code) | Latest | 💡 |
 
@@ -218,7 +219,7 @@ cd src/Api && dotnet run               # Run the API locally
 ```bash
 cd src
 dotnet build TechSpherex.CleanArchitecture.slnx
-dotnet test TechSpherex.CleanArchitecture.slnx
+dotnet test --solution TechSpherex.CleanArchitecture.slnx
 ```
 
 ---
