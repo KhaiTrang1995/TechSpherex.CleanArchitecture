@@ -1,6 +1,6 @@
 # TechSpherex Clean Architecture — Documentation
 
-Complete documentation for the TechSpherex Clean Architecture Template for .NET 10.
+Complete documentation for the TechSpherex Clean Architecture Template for .NET 11.
 
 ## Table of Contents
 

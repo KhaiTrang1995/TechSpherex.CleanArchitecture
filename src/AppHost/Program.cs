@@ -17,4 +17,4 @@ builder.AddProject<Projects.TechSpherex_CleanArchitecture_Api>("api")
     .WaitFor(redis)
     .WithExternalHttpEndpoints();
 
-builder.Build().Run();
+await builder.Build().RunAsync();

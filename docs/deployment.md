@@ -59,10 +59,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.0.x'
+          dotnet-version: '11.0.x'
       - run: dotnet restore src/TechSpherex.CleanArchitecture.slnx
       - run: dotnet build src/TechSpherex.CleanArchitecture.slnx --no-restore
-      - run: dotnet test src/TechSpherex.CleanArchitecture.slnx --no-build
+      - run: dotnet test --solution src/TechSpherex.CleanArchitecture.slnx --no-build
 
   build-image:
     needs: test
@@ -114,9 +114,9 @@ steps:
   - task: UseDotNet@2
     inputs:
       packageType: 'sdk'
-      version: '10.0.x'
+      version: '11.0.x'
 
-  - script: dotnet test src/TechSpherex.CleanArchitecture.slnx
+  - script: dotnet test --solution src/TechSpherex.CleanArchitecture.slnx
     displayName: 'Run Tests'
 
   - task: Docker@2

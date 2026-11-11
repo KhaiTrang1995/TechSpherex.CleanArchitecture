@@ -1,4 +1,5 @@
 
+using System.Linq.Expressions;
 using TechSpherex.CleanArchitecture.Application.Abstractions.Data;
 using TechSpherex.CleanArchitecture.Application.Abstractions.Tenancy;
 using TechSpherex.CleanArchitecture.Domain.Common;
@@ -21,25 +22,24 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options) : Ident
 
         // Multi-tenant global query filter
         // Applies to all entities implementing ITenantEntity
-        foreach (var entityType in builder.Model.GetEntityTypes())
+        var tenantEntityTypes = builder.Model.GetEntityTypes()
+            .Select(entityType => entityType.ClrType)
+            .Where(clrType => typeof(ITenantEntity).IsAssignableFrom(clrType))
+            .ToList();
+
+        foreach (var clrType in tenantEntityTypes)
         {
-            if (typeof(ITenantEntity).IsAssignableFrom(entityType.ClrType))
-            {
-                var method = typeof(AppDbContext)
-                    .GetMethod(nameof(ApplyTenantFilter),
-                        System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
-                    .MakeGenericMethod(entityType.ClrType);
+            // e => e.TenantId == "default", built per entity type without reflection-invoke
+            var entity = Expression.Parameter(clrType, "e");
+            var filter = Expression.Lambda(
+                Expression.Equal(
+                    Expression.Property(entity, nameof(ITenantEntity.TenantId)),
+                    Expression.Constant("default")),
+                entity);
 
-                method.Invoke(null, [builder]);
-            }
+            builder.Entity(clrType).HasQueryFilter(filter);
+            builder.Entity(clrType).HasIndex(nameof(ITenantEntity.TenantId));
         }
-    }
-
-    private static void ApplyTenantFilter<TEntity>(ModelBuilder builder)
-        where TEntity : class, ITenantEntity
-    {
-        builder.Entity<TEntity>().HasQueryFilter(e => e.TenantId == "default");
-        builder.Entity<TEntity>().HasIndex(e => e.TenantId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

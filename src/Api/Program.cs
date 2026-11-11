@@ -47,12 +47,10 @@ try
         {
             var info = document.Info ?? new Microsoft.OpenApi.OpenApiInfo();
             info.Title = "TechSpherex Clean Architecture API";
-            info.Description = "A production-ready Clean Architecture template for .NET 10 by TechSpherex";
-            info.Contact = new Microsoft.OpenApi.OpenApiContact
-            {
-                Name = "TechSpherex",
-                Url = new Uri("https://TechSpherex.com")
-            };
+            info.Description = "A production-ready Clean Architecture template for .NET 11 by TechSpherex";
+            info.Contact = new Microsoft.OpenApi.OpenApiContact { Name = "TechSpherex" };
+            if (Uri.TryCreate(builder.Configuration["OpenApi:ContactUrl"], UriKind.Absolute, out var contactUrl))
+                info.Contact.Url = contactUrl;
             document.Info = info;
 
             var components = document.Components ?? new Microsoft.OpenApi.OpenApiComponents();
@@ -82,12 +80,21 @@ try
     // ProblemDetails
     builder.Services.AddProblemDetails();
 
+    // HTTP compression. ASP.NET Core 11 adds Zstandard (zstd) next to Brotli and gzip for
+    // both response compression and request decompression. Responses over HTTPS are only
+    // compressed when ResponseCompression:EnableForHttps is true (off by default: BREACH).
+    builder.Services.AddResponseCompression(options =>
+        options.EnableForHttps = builder.Configuration.GetValue("ResponseCompression:EnableForHttps", false));
+    builder.Services.AddRequestDecompression();
+
     var app = builder.Build();
 
     // Global exception handler
     app.UseExceptionHandler();
     app.UseStatusCodePages();
     app.UseHttpsRedirection();
+    app.UseResponseCompression();
+    app.UseRequestDecompression();
 
     if (app.Environment.IsDevelopment())
     {

@@ -45,7 +45,7 @@ This is enforced by:
   - `AuditableEntity` — Adds `CreatedAt`, `LastModifiedAt`, audit fields
   - `ITenantEntity` — Multi-tenant marker interface
   - `Result<T>` — Result pattern for explicit error handling
-  - `Error` — Typed error with `Code`, `Message`, `ErrorType`
+  - `Error` — Closed record hierarchy (C# 15) with `Code`, `Message`; kinds: `NotFoundError`, `ValidationError`, `ConflictError`, `FailureError`
   - `PagedResult<T>` — Pagination wrapper
 
 ### Application Layer (`TechSpherex.CleanArchitecture.Application`)

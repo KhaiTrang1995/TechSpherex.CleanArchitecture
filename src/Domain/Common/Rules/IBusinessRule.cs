@@ -6,7 +6,7 @@ namespace TechSpherex.CleanArchitecture.Domain.Common.Rules;
 /// </summary>
 public interface IBusinessRule
 {
-    /// <summary>Unique rule identifier (e.g. "Todo.TitleRequired").</summary>
+    /// <summary>Unique rule identifier (e.g. "Order.MinAmount").</summary>
     string RuleCode { get; }
 
     /// <summary>Human-readable error message when the rule is violated.</summary>

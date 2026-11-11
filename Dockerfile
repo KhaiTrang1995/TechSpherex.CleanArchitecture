@@ -7,11 +7,11 @@
 # ============================================================
 
 # ---- Stage 1: Restore ----
-FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS restore
+FROM mcr.microsoft.com/dotnet/sdk:11.0-alpine AS restore
 WORKDIR /src
 
 # Copy solution and project files first (layer caching)
-COPY Directory.Build.props Directory.Packages.props ./
+COPY global.json Directory.Build.props Directory.Packages.props ./
 COPY src/TechSpherex.CleanArchitecture.slnx ./src/
 COPY src/Domain/TechSpherex.CleanArchitecture.Domain.csproj                       src/Domain/
 COPY src/Application/TechSpherex.CleanArchitecture.Application.csproj             src/Application/
@@ -42,7 +42,7 @@ RUN if [ "$PUBLISH_AOT" = "true" ]; then \
     fi
 
 # ---- Stage 3: Runtime (JIT) ----
-FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:11.0-alpine AS runtime
 LABEL maintainer="TechSpherex <contact@techspherex.com>"
 LABEL org.opencontainers.image.source="https://github.com/KhaiTrang1995/clean-architecture-template"
 
