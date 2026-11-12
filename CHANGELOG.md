@@ -29,6 +29,12 @@ All notable changes to the TechSpherex Clean Architecture Template will be docum
 - `.config/dotnet-ef.json` supplies project / startup project / context to `dotnet ef` (dotnet-ef 11+)
 - NSubstitute 6, FluentAssertions 8.11, Microsoft.NET.Test.Sdk 18.11
 
+### Windows start script and in-memory mode
+- `scripts/start.ps1` starts the Aspire AppHost on Windows (`-InMemory`, `-Http`, `-NoBuild`)
+- `Database:UseInMemory=true` runs the API on the EF Core in-memory provider and an in-process cache;
+  the AppHost flag `--UseInMemoryStores=true` skips the PostgreSQL and Redis containers
+- AppHost gets an `http` launch profile for machines without a trusted development certificate
+
 ### Code quality
 - `SonarAnalyzer.CSharp` runs in every project build; the solution builds with zero Sonar findings
 - Tenant query filter is built with expression trees instead of reflection-invoking a private method

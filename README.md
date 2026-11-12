@@ -15,11 +15,11 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/KhaiTrang1995"><img src="https://img.shields.io/badge/C%23-14-239120?style=flat-square&logo=csharp" alt="C#" /></a>
+  <a href="https://github.com/KhaiTrang1995"><img src="https://img.shields.io/badge/C%23-15-239120?style=flat-square&logo=csharp" alt="C#" /></a>
   <a href="#"><img src="https://img.shields.io/badge/Aspire-13-6C3483?style=flat-square" alt="Aspire" /></a>
   <a href="#"><img src="https://img.shields.io/badge/EF_Core-10-6C3483?style=flat-square" alt="EF Core" /></a>
   <a href="#"><img src="https://img.shields.io/badge/xUnit-v3-5E81AC?style=flat-square" alt="xUnit" /></a>
-  <a href="#"><img src="https://img.shields.io/badge/Version-2.0.0-blue?style=flat-square" alt="v2.0.0" /></a>
+  <a href="#"><img src="https://img.shields.io/badge/Version-3.0.0-blue?style=flat-square" alt="v3.0.0" /></a>
 </p>
 
 ---
@@ -158,8 +158,7 @@ clean-architecture-template/
 ### Option A — Run with Aspire _(recommended for development)_
 
 ```bash
-cd src/TechSpherex.CleanArchitecture.AppHost
-dotnet run
+dotnet run --project src/AppHost
 ```
 
 This automatically starts:
@@ -167,6 +166,16 @@ This automatically starts:
 - **Redis** cache with RedisInsight
 - **API** with auto-migration and seed data
 - **Aspire Dashboard** for OpenTelemetry (traces, metrics, logs)
+
+On Windows, `scripts/start.ps1` does the same and checks the SDK and Docker first:
+
+```powershell
+.\scripts\start.ps1                  # PostgreSQL + Redis containers (needs Docker)
+.\scripts\start.ps1 -InMemory        # database and cache in RAM — no Docker, data lost on exit
+.\scripts\start.ps1 -InMemory -Http  # same, dashboard over plain HTTP (no trusted dev certificate needed)
+```
+
+The dashboard login URL is printed in the console.
 
 ### Option B — Run with Docker Compose
 

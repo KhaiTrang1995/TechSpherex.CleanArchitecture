@@ -16,7 +16,11 @@ public static class AppDbSeeder
         var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
         var logger = scope.ServiceProvider.GetRequiredService<ILogger<AppDbContext>>();
 
-        await context.Database.MigrateAsync();
+        // Migrations only exist for relational providers; the in-memory provider just creates the model.
+        if (context.Database.IsRelational())
+            await context.Database.MigrateAsync();
+        else
+            await context.Database.EnsureCreatedAsync();
 
         await SeedRolesAsync(roleManager, logger);
         await SeedAdminUserAsync(userManager, logger);

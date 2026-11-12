@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TechSpherex Clean Architecture — .NET 11 starter template</title>
+<meta name="description" content="A Clean Architecture starter template for .NET 11 and C# 15: minimal APIs, gRPC, manual CQRS, EF Core + PostgreSQL, HybridCache, Aspire, OpenTelemetry, Docker and Native AOT.">
+<meta property="og:title" content="TechSpherex Clean Architecture Template">
+<meta property="og:description" content="Ship features from day one — not boilerplate. A Clean Architecture starter for .NET 11.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%236d4aff'/%3E%3Cpath d='M7 10h18M7 16h18M7 22h18' stroke='%23fff' stroke-width='2.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #fbfaf7;
+  --bg-raised: #ffffff;
+  --bg-sunken: #f1efe9;
+  --ink: #16151c;
+  --ink-soft: #55535f;
+  --ink-faint: #8a8794;
+  --line: #e3e0d8;
+  --accent: #5b3df5;
+  --accent-ink: #ffffff;
+  --accent-soft: #ece8ff;
+  --teal: #0b8a7a;
+  --amber: #b4610a;
+  --code-bg: #15141b;
+  --code-ink: #e8e6f0;
+  --code-dim: #8f8ba3;
+  --code-accent: #b9a7ff;
+  --shadow: 0 1px 2px rgba(22,21,28,.06), 0 8px 24px rgba(22,21,28,.06);
+  --radius: 14px;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "Cascadia Code", "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d0c12; --bg-raised: #16151d; --bg-sunken: #121118;
+    --ink: #f0eef6; --ink-soft: #b3b0c0; --ink-faint: #807d8f; --line: #2a2835;
+    --accent: #9d8bff; --accent-ink: #120f24; --accent-soft: #231f3d;
+    --teal: #4fd1bd; --amber: #f0a95a;
+    --code-bg: #08070c; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d0c12; --bg-raised: #16151d; --bg-sunken: #121118;
+  --ink: #f0eef6; --ink-soft: #b3b0c0; --ink-faint: #807d8f; --line: #2a2835;
+  --accent: #9d8bff; --accent-ink: #120f24; --accent-soft: #231f3d;
+  --teal: #4fd1bd; --amber: #f0a95a;
+  --code-bg: #08070c; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--sans); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+code { font-family: var(--mono); font-size: .9em; background: var(--bg-sunken); border: 1px solid var(--line); border-radius: 6px; padding: .08em .35em; }
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+/* nav */
+header.nav { position: sticky; top: 0; z-index: 10; background: color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; gap: 20px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--ink); letter-spacing: -.01em; }
+.brand:hover { text-decoration: none; }
+.brand svg { width: 26px; height: 26px; flex: none; }
+.nav nav { margin-left: auto; display: flex; gap: 22px; align-items: center; }
+.nav nav a { color: var(--ink-soft); font-size: 14.5px; }
+.nav nav a:hover { color: var(--ink); text-decoration: none; }
+.icon-btn { background: none; border: 1px solid var(--line); color: var(--ink-soft); border-radius: 9px; width: 36px; height: 36px; display: grid; place-items: center; cursor: pointer; }
+.icon-btn:hover { color: var(--ink); border-color: var(--ink-faint); }
+@media (max-width: 760px) { .nav nav a.hide-sm { display: none; } }
+
+/* hero */
+.hero { padding: 72px 0 56px; }
+.hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: center; }
+.eyebrow { display: inline-flex; flex-wrap: wrap; gap: 8px; margin-bottom: 22px; }
+.pill { font: 600 12.5px/1 var(--mono); padding: 7px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent); }
+.pill.plain { background: transparent; color: var(--ink-soft); border-color: var(--line); }
+h1 { font-size: clamp(36px, 5.4vw, 60px); line-height: 1.04; letter-spacing: -.035em; margin: 0 0 20px; text-wrap: balance; }
+h1 em { font-style: normal; color: var(--accent); }
+.lede { font-size: 18.5px; color: var(--ink-soft); max-width: 56ch; margin: 0 0 30px; text-wrap: pretty; }
+.cta { display: flex; flex-wrap: wrap; gap: 12px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; font-size: 15px; padding: 12px 18px; border-radius: 11px; border: 1px solid var(--line); color: var(--ink); background: var(--bg-raised); }
+.btn:hover { text-decoration: none; border-color: var(--ink-faint); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.primary:hover { filter: brightness(1.07); }
+.btn svg { width: 17px; height: 17px; }
+
+.term { background: var(--code-bg); color: var(--code-ink); border-radius: var(--radius); box-shadow: var(--shadow); border: 1px solid #2a2835; overflow: hidden; }
+.term-bar { display: flex; align-items: center; gap: 7px; padding: 11px 14px; border-bottom: 1px solid #23212d; font: 12.5px var(--mono); color: var(--code-dim); }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: #3a3747; }
+.term-bar span:last-child { margin-left: 8px; }
+pre { margin: 0; padding: 18px; overflow-x: auto; font: 13.5px/1.75 var(--mono); color: var(--code-ink); }
+pre .c { color: var(--code-dim); }
+pre .p { color: var(--code-accent); user-select: none; }
+pre .o { color: #7fdcc9; }
+.term pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 22px; min-height: 300px; }
+@media (max-width: 900px) { .hero { padding: 48px 0 40px; } .hero-grid { grid-template-columns: 1fr; gap: 34px; } }
+
+/* stats */
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg-raised); overflow: hidden; }
+.stat { padding: 20px 22px; border-right: 1px solid var(--line); }
+.stat:last-child { border-right: 0; }
+.stat b { display: block; font-size: 28px; letter-spacing: -.03em; line-height: 1.1; }
+.stat span { color: var(--ink-soft); font-size: 14px; }
+@media (max-width: 760px) { .stats { grid-template-columns: repeat(2, 1fr); } .stat:nth-child(2) { border-right: 0; } .stat:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+
+/* sections */
+section { padding: 72px 0 0; }
+.sec-head { max-width: 62ch; margin: 0 auto 34px; text-align: center; }
+.kicker { font: 600 12.5px var(--mono); color: var(--accent); text-transform: uppercase; letter-spacing: .09em; }
+h2 { font-size: clamp(26px, 3.4vw, 36px); letter-spacing: -.028em; line-height: 1.15; margin: 8px 0 12px; text-wrap: balance; }
+.sec-head p { color: var(--ink-soft); margin: 0; font-size: 17px; }
+
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+.card { background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; }
+.card h3 { font-size: 16.5px; margin: 12px 0 6px; letter-spacing: -.01em; }
+.card p { margin: 0; color: var(--ink-soft); font-size: 14.5px; }
+.ico { width: 36px; height: 36px; border-radius: 10px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.ico svg { width: 19px; height: 19px; }
+@media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+
+/* architecture */
+.arch { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; align-items: center; }
+.layers { display: grid; gap: 0; }
+.layer { background: var(--bg-raised); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 12px; padding: 16px 18px; }
+.layer h3 { margin: 0 0 3px; font-size: 16px; }
+.layer p { margin: 0; color: var(--ink-soft); font-size: 14px; }
+.layer:nth-child(3) { border-left-color: color-mix(in srgb, var(--accent) 75%, var(--teal)); }
+.layer:nth-child(5) { border-left-color: color-mix(in srgb, var(--accent) 40%, var(--teal)); }
+.layer:nth-child(7) { border-left-color: var(--teal); }
+.dep { display: flex; align-items: center; gap: 8px; color: var(--ink-faint); font: 12px var(--mono); padding: 6px 0 6px 22px; }
+.dep svg { width: 12px; height: 16px; }
+.rules { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+.rules li { padding-left: 28px; position: relative; color: var(--ink-soft); font-size: 15.5px; }
+.rules li::before { content: ""; position: absolute; left: 0; top: .42em; width: 16px; height: 16px; border-radius: 50%; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
+.rules li::after { content: ""; position: absolute; left: 5px; top: calc(.42em + 4px); width: 6px; height: 4px; border-left: 2px solid var(--accent); border-bottom: 2px solid var(--accent); transform: rotate(-45deg); }
+.rules b { color: var(--ink); }
+@media (max-width: 900px) { .arch { grid-template-columns: 1fr; } }
+
+/* what's new */
+.new { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+.new .card { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.new .tag { font: 600 11.5px var(--mono); color: var(--teal); border: 1px solid color-mix(in srgb, var(--teal) 35%, transparent); border-radius: 6px; padding: 3px 7px; white-space: nowrap; }
+.new h3 { margin: 0; }
+.new { grid-template-columns: repeat(3, 1fr); }
+.note { margin: 14px auto 0; max-width: 860px; text-align: center; padding: 14px 16px; border: 1px dashed var(--line); border-radius: 12px; color: var(--ink-soft); font-size: 14.5px; }
+.note b { color: var(--amber); }
+@media (max-width: 900px) { .new { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .new { grid-template-columns: 1fr; } }
+
+/* quick start */
+.narrow { max-width: 860px; margin: 0 auto; }
+.tabs { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 14px; }
+.tab { font: 600 14px var(--sans); padding: 9px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg-raised); color: var(--ink-soft); cursor: pointer; }
+.tab[aria-selected="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.panel { position: relative; }
+.panel[hidden] { display: none; }
+.copy { position: absolute; top: 10px; right: 10px; font: 600 12px var(--mono); color: var(--code-dim); background: #1e1c27; border: 1px solid #2f2c3b; border-radius: 8px; padding: 6px 10px; cursor: pointer; }
+.copy:hover { color: var(--code-ink); }
+.panel pre { border-radius: var(--radius); background: var(--code-bg); border: 1px solid #2a2835; padding: 22px 18px; }
+.after { margin-top: 16px; color: var(--ink-soft); font-size: 15px; text-align: center; }
+
+/* stack table */
+.table { width: 100%; border-collapse: collapse; background: var(--bg-raised); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; display: table; }
+.table th, .table td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); font-size: 14.5px; vertical-align: top; }
+.table tr:last-child td { border-bottom: 0; }
+.table td:first-child { font-weight: 600; white-space: nowrap; width: 1%; }
+.table td:last-child { color: var(--ink-soft); }
+.scroll { overflow-x: auto; border-radius: var(--radius); }
+
+/* docs */
+.docs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.doc { display: block; background: var(--bg-raised); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; color: var(--ink); }
+.doc:hover { text-decoration: none; border-color: var(--accent); }
+.doc b { display: flex; justify-content: space-between; align-items: center; font-size: 15.5px; }
+.doc b::after { content: "→"; color: var(--ink-faint); }
+.doc:hover b::after { color: var(--accent); }
+.doc span { display: block; color: var(--ink-soft); font-size: 14px; margin-top: 3px; }
+@media (max-width: 900px) { .docs { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .docs { grid-template-columns: 1fr; } }
+
+footer { margin-top: 84px; border-top: 1px solid var(--line); padding: 28px 0 40px; color: var(--ink-faint); font-size: 14px; }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+footer a { color: var(--ink-soft); }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="TechSpherex Clean Architecture">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--accent)"/><path d="M7 10h18M7 16h18M7 22h18" stroke="var(--accent-ink)" stroke-width="2.6" stroke-linecap="round"/></svg>
+      <span>TechSpherex <span style="color:var(--ink-faint);font-weight:500">Clean Architecture</span></span>
+    </a>
+    <nav>
+      <a class="hide-sm" href="#features">Features</a>
+      <a class="hide-sm" href="#architecture">Architecture</a>
+      <a class="hide-sm" href="#whats-new">What's new</a>
+      <a class="hide-sm" href="#start">Quick start</a>
+      <a class="hide-sm" href="#docs">Docs</a>
+      <a href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture">GitHub</a>
+      <button class="icon-btn" id="theme" type="button" aria-label="Switch between light and dark theme">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<div class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">
+        <span class="pill">v3.0.0</span>
+        <span class="pill plain">.NET 11</span>
+        <span class="pill plain">C# 15</span>
+        <span class="pill plain">MIT</span>
+      </div>
+      <h1>Ship features from day one — <em>not boilerplate.</em></h1>
+      <p class="lede">A Clean Architecture starter template for .NET 11. Four layers with compiler- and test-enforced boundaries, REST and gRPC over the same handlers, and a full local stack that starts with one command.</p>
+      <div class="cta">
+        <a class="btn primary" href="#start">
+          Get started
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+    </div>
+
+    <div class="term" role="img" aria-label="Terminal showing the commands to clone and start the template">
+      <div class="term-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>PowerShell</span></div>
+<pre><span class="p">&gt;</span> git clone https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture.git
+<span class="p">&gt;</span> cd TechSpherex.CleanArchitecture
+<span class="p">&gt;</span> .\scripts\start.ps1 -InMemory
+
+<span class="c">SDK       : 11.0.100
+Mode      : in-memory database and cache</span>
+<span class="o">Now listening on: https://localhost:17171</span>
+<span class="c">Login to the dashboard at
+  https://localhost:17171/login?t=…</span></pre>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="stats">
+    <div class="stat"><b>4</b><span>layers, dependencies point inward</span></div>
+    <div class="stat"><b>17</b><span>architecture and unit tests</span></div>
+    <div class="stat"><b>0</b><span>SonarAnalyzer findings in the build</span></div>
+    <div class="stat"><b>1</b><span>command to run the whole stack</span></div>
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">What's included</div>
+      <h2>The parts every service needs, already wired together</h2>
+      <p>Each piece is plain code in your repository — no hidden framework, no commercial dependency in the request pipeline.</p>
+    </div>
+    <div class="grid">
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="m3 13 9 5 9-5"/></svg></div><h3>Clean Architecture</h3><p>Domain, Application, Infrastructure and Api projects. Architecture tests fail the build when a layer reaches the wrong way.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M4 12h16M4 17h7"/><circle cx="18" cy="7" r="2"/><circle cx="15" cy="17" r="2"/></svg></div><h3>Manual CQRS</h3><p>Commands, queries and handlers as small interfaces. No mediator library, so nothing to license and nothing to debug through.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h6l2-6 3 12 2-6h3"/></svg></div><h3>REST + gRPC</h3><p>Minimal APIs with <code>TypedResults</code> and gRPC services call the same handlers. Scalar serves the OpenAPI 3.2 document.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.500 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Result pattern</h3><p>Failures are values. A closed <code>Error</code> hierarchy lets the compiler check that every error kind maps to an HTTP and gRPC status.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div><h3>Identity + JWT</h3><p>ASP.NET Core Identity with JWT bearer authentication, refresh tokens and role-based authorization.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.700 3.100 3 7 3s7-1.300 7-3V6M5 12v6c0 1.700 3.100 3 7 3s7-1.300 7-3v-6"/></svg></div><h3>EF Core + PostgreSQL</h3><p>Migrations, seeding and audit fields, with a config-only in-memory mode for demos and tests.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 14h6l-1 7 8-11h-6l1-7Z"/></svg></div><h3>HybridCache</h3><p>In-process L1 and Redis L2 behind an <code>ICacheService</code> abstraction, with stampede protection and tag invalidation.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18M6 20V10M11 20V4M16 20v-7M21 20v-4"/></svg></div><h3>Observability</h3><p>OpenTelemetry traces, metrics and logs. Aspire dashboard in development; ELK and Grafana stacks as Docker Compose profiles.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="8" rx="2"/><path d="M7 11V8h3v3M11 11V5h3v6M15 11V8h3v3"/></svg></div><h3>Docker + Native AOT</h3><p>Multi-stage Alpine image running as a non-root user, with a build argument that switches to a Native AOT publish.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="7" height="7" rx="1.500"/><rect x="14" y="4" width="7" height="7" rx="1.500"/><rect x="3" y="14" width="7" height="7" rx="1.500"/><rect x="14" y="14" width="7" height="7" rx="1.500"/></svg></div><h3>Multi-tenancy</h3><p>Shared-table scaffold: a marker interface, tenant resolution middleware and EF Core query filters to build on.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="14" height="11" rx="3"/><path d="M12 8V4M9 13h.01M15 13h.01M9.500 16.500h5"/></svg></div><h3>Skill agents</h3><p>An interface-only agent pattern with an orchestrator and a sample skill, ready to connect to the LLM provider you choose.</p></div>
+      <div class="card"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h13"/><path d="m17 10 3 2-3 2"/></svg></div><h3>Rule engine</h3><p>Business rules declared in configuration with AND/OR logic and priorities, so thresholds change without a redeploy.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="architecture">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Architecture</div>
+      <h2>Dependencies point one way: inward</h2>
+      <p>Each project references only the layer beneath it. The domain has no infrastructure knowledge at all.</p>
+    </div>
+    <div class="arch">
+      <div class="layers">
+        <div class="layer"><h3>Api</h3><p>REST endpoints · gRPC services · middleware · Scalar</p></div>
+        <div class="dep"><svg viewBox="0 0 12 16" fill="none" stroke="currentColor" stroke-width="1.600" stroke-linecap="round" stroke-linejoin="round"><path d="M6 1v13M2 10l4 4 4-4"/></svg>depends on</div>
+        <div class="layer"><h3>Infrastructure</h3><p>EF Core · Identity · JWT · cache · CORS · rule engine</p></div>
+        <div class="dep"><svg viewBox="0 0 12 16" fill="none" stroke="currentColor" stroke-width="1.600" stroke-linecap="round" stroke-linejoin="round"><path d="M6 1v13M2 10l4 4 4-4"/></svg>depends on</div>
+        <div class="layer"><h3>Application</h3><p>CQRS handlers · validators · abstractions for data, cache and rules</p></div>
+        <div class="dep"><svg viewBox="0 0 12 16" fill="none" stroke="currentColor" stroke-width="1.600" stroke-linecap="round" stroke-linejoin="round"><path d="M6 1v13M2 10l4 4 4-4"/></svg>depends on</div>
+        <div class="layer"><h3>Domain</h3><p>Entities · <code>Result</code> and <code>Error</code> · business rules</p></div>
+      </div>
+      <ul class="rules">
+        <li><b>Enforced, not documented.</b> Nine NetArchTest rules run with the test suite and fail when a layer references one above it.</li>
+        <li><b>One handler, two transports.</b> REST endpoints and gRPC services are thin adapters over the same command and query handlers.</li>
+        <li><b>Errors the compiler understands.</b> <code>Error</code> is a C# 15 closed hierarchy, so a new error kind without a status mapping is a build warning.</li>
+        <li><b>Swappable edges.</b> Handlers depend on <code>IAppDbContext</code> and <code>ICacheService</code>, never on PostgreSQL or Redis packages.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section id="whats-new">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Version 3.0</div>
+      <h2>What's new with .NET 11</h2>
+      <p>The full list, including breaking changes, is in the <a href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/CHANGELOG.md">changelog</a>.</p>
+    </div>
+    <div class="new">
+      <div class="card"><span class="tag">C# 15</span><h3>Closed error hierarchy</h3><p><code>Error</code> is a <code>closed record</code>. HTTP and gRPC mappings are exhaustive switches with no fallback arm.</p></div>
+      <div class="card"><span class="tag">ASP.NET Core 11</span><h3>Zstandard compression</h3><p>Response compression and request decompression with zstd alongside Brotli and gzip.</p></div>
+      <div class="card"><span class="tag">OpenAPI</span><h3>OpenAPI 3.2 document</h3><p>Generated by <code>Microsoft.AspNetCore.OpenApi</code> 11 and rendered by Scalar.</p></div>
+      <div class="card"><span class="tag">Tooling</span><h3>One-command start on Windows</h3><p><code>scripts/start.ps1</code> checks the SDK and Docker, then starts Aspire. <code>-InMemory</code> needs no Docker at all.</p></div>
+      <div class="card"><span class="tag">Testing</span><h3>Microsoft.Testing.Platform</h3><p>xUnit v3 4.x on the new test platform: <code>dotnet test --solution</code>.</p></div>
+      <div class="card"><span class="tag">Quality</span><h3>Sonar-clean build</h3><p><code>SonarAnalyzer.CSharp</code> runs in every project and the solution builds with zero findings.</p></div>
+    </div>
+    <p class="note"><b>Held back on purpose:</b> EF Core and the Npgsql provider stay on 10.x until the Npgsql provider for EF Core 11 is released, and Runtime Async stays off while it is a preview feature.</p>
+  </div>
+</section>
+
+<section id="start">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Quick start</div>
+      <h2>Running in a minute</h2>
+      <p>You need the <a href="https://dotnet.microsoft.com/download/dotnet/11.0">.NET 11 SDK</a>. Docker is only required for the PostgreSQL and Redis containers.</p>
+    </div>
+
+    <div class="narrow">
+    <div class="tabs" role="tablist" aria-label="Ways to run the template">
+      <button class="tab" role="tab" id="t-win" aria-controls="p-win" aria-selected="true" type="button">Windows script</button>
+      <button class="tab" role="tab" id="t-aspire" aria-controls="p-aspire" aria-selected="false" type="button" tabindex="-1">Aspire</button>
+      <button class="tab" role="tab" id="t-docker" aria-controls="p-docker" aria-selected="false" type="button" tabindex="-1">Docker Compose</button>
+      <button class="tab" role="tab" id="t-test" aria-controls="p-test" aria-selected="false" type="button" tabindex="-1">Tests</button>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-win" aria-labelledby="t-win">
+      <button class="copy" type="button">Copy</button>
+<pre><span class="c"># No Docker: database and cache live in RAM, data is lost on exit</span>
+git clone https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture.git
+cd TechSpherex.CleanArchitecture
+.\scripts\start.ps1 -InMemory
+
+<span class="c"># Full stack: PostgreSQL + Redis containers</span>
+.\scripts\start.ps1
+
+<span class="c"># Dashboard over plain HTTP when the dev certificate is not trusted</span>
+.\scripts\start.ps1 -InMemory -Http</pre>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-aspire" aria-labelledby="t-aspire" hidden>
+      <button class="copy" type="button">Copy</button>
+<pre>git clone https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture.git
+cd TechSpherex.CleanArchitecture
+
+<span class="c"># Starts PostgreSQL, Redis, the API and the Aspire dashboard</span>
+dotnet run --project src/AppHost
+
+<span class="c"># Same, without containers</span>
+dotnet run --project src/AppHost -- --UseInMemoryStores=true</pre>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-docker" aria-labelledby="t-docker" hidden>
+      <button class="copy" type="button">Copy</button>
+<pre><span class="c"># Run from the repository root</span>
+docker compose up -d --build                    <span class="c"># API + PostgreSQL + Redis</span>
+docker compose --profile grafana up -d --build  <span class="c"># + Loki, Tempo, Prometheus, Grafana</span>
+docker compose --profile elk up -d --build      <span class="c"># + Elasticsearch, Logstash, Kibana</span>
+
+<span class="c"># Native AOT image</span>
+docker build --build-arg PUBLISH_AOT=true -t techspherex-api:aot .</pre>
+    </div>
+
+    <div class="panel" role="tabpanel" id="p-test" aria-labelledby="t-test" hidden>
+      <button class="copy" type="button">Copy</button>
+<pre>dotnet build src/TechSpherex.CleanArchitecture.slnx
+dotnet test --solution src/TechSpherex.CleanArchitecture.slnx</pre>
+    </div>
+
+    <p class="after">Then open the Aspire dashboard from the login URL printed in the console, and the API reference at <code>https://localhost:7200/scalar/v1</code>.</p>
+    </div>
+  </div>
+</section>
+
+<section id="stack">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Tech stack</div>
+      <h2>Current, mainstream, replaceable</h2>
+    </div>
+    <div class="scroll narrow">
+      <table class="table">
+        <tbody>
+          <tr><td>Runtime</td><td>.NET 11, C# 15, <code>.slnx</code> solution, Central Package Management</td></tr>
+          <tr><td>API</td><td>Minimal APIs with <code>TypedResults</code>, gRPC, OpenAPI 3.2 with Scalar, ProblemDetails (RFC 9457)</td></tr>
+          <tr><td>Application</td><td>Manual CQRS handlers, FluentValidation 12, Result pattern</td></tr>
+          <tr><td>Data</td><td>EF Core 10 (LTS) with PostgreSQL; in-memory provider for demos</td></tr>
+          <tr><td>Caching</td><td>Microsoft HybridCache — in-process L1 and Redis L2</td></tr>
+          <tr><td>Security</td><td>ASP.NET Core Identity, JWT bearer with refresh tokens, config-driven CORS</td></tr>
+          <tr><td>Observability</td><td>Aspire 13, OpenTelemetry, Serilog, optional ELK and Grafana stacks</td></tr>
+          <tr><td>Delivery</td><td>Multi-stage Alpine Docker image, Native AOT option, Docker Compose profiles</td></tr>
+          <tr><td>Quality</td><td>xUnit v3 on Microsoft.Testing.Platform, NetArchTest, NSubstitute, SonarAnalyzer</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="docs">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kicker">Documentation</div>
+      <h2>Guides for each part of the template</h2>
+    </div>
+    <div class="docs">
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/getting-started.md"><b>Getting started</b><span>Clone, configure and run</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/architecture.md"><b>Architecture</b><span>Layers, dependency rules, CQRS</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/adding-features.md"><b>Adding features</b><span>A complete feature, step by step</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/docker.md"><b>Docker</b><span>Images, profiles, Kubernetes hints</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/aot.md"><b>Native AOT</b><span>Publishing, limits, EF Core strategy</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/multi-tenancy.md"><b>Multi-tenancy</b><span>Tenant resolution and isolation</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/skill-agents.md"><b>Skill agents</b><span>Agent pattern and LLM integration</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/observability.md"><b>Observability</b><span>OpenTelemetry, ELK, Grafana</span></a>
+      <a class="doc" href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/docs/deployment.md"><b>Deployment</b><span>Production checklist and CI/CD</span></a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 TechSpherex · Released under the MIT License</span>
+    <span>
+      <a href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture">Source</a> ·
+      <a href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/CHANGELOG.md">Changelog</a> ·
+      <a href="https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/issues">Issues</a>
+    </span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  function stored() { try { return localStorage.getItem('theme'); } catch (e) { return null; } }
+  var saved = stored();
+  if (saved === 'light' || saved === 'dark') root.setAttribute('data-theme', saved);
+
+  document.getElementById('theme').addEventListener('click', function () {
+    var current = root.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch (e) { /* storage unavailable */ }
+  });
+
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('[role="tab"]'));
+  function select(tab) {
+    tabs.forEach(function (t) {
+      var on = t === tab;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')).hidden = !on;
+    });
+  }
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { select(tab); });
+    tab.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+      var next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+      select(next); next.focus();
+    });
+  });
+
+  document.querySelectorAll('.copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var text = btn.parentElement.querySelector('pre').innerText;
+      var done = function () { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 1400); };
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () {});
+    });
+  });
+})();
+</script>
+</body>
+</html>

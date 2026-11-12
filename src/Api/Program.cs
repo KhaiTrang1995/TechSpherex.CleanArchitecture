@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 using TechSpherex.CleanArchitecture.Api.Endpoints;
@@ -24,11 +25,20 @@ try
     builder.Host.UseSerilog((context, loggerConfiguration) =>
         loggerConfiguration.ReadFrom.Configuration(context.Configuration));
 
-    // Aspire-managed PostgreSQL
-    builder.AddNpgsqlDbContext<AppDbContext>("TechSpherex-db");
+    if (builder.Configuration.GetValue("Database:UseInMemory", false))
+    {
+        // Demo mode: everything lives in RAM and is lost on shutdown. No PostgreSQL/Redis needed.
+        builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("TechSpherex"));
+        builder.Services.AddDistributedMemoryCache();
+    }
+    else
+    {
+        // Aspire-managed PostgreSQL
+        builder.AddNpgsqlDbContext<AppDbContext>("TechSpherex-db");
 
-    // Aspire-managed Redis (for HybridCache L2)
-    builder.AddRedisDistributedCache("TechSpherex-cache");
+        // Aspire-managed Redis (for HybridCache L2)
+        builder.AddRedisDistributedCache("TechSpherex-cache");
+    }
 
     // Application & Infrastructure (includes HybridCache, CORS, RuleEngine)
     builder.Services.AddApplication();
