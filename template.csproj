@@ -5,24 +5,32 @@
     <PackageId>TechSpherex.CleanArchitecture.Template</PackageId>
     <Title>TechSpherex Clean Architecture Template</Title>
     <Authors>TechSpherex</Authors>
+    <Copyright>Copyright (c) 2026 TechSpherex</Copyright>
     <Description>A production-ready Clean Architecture starter template for .NET 11. Includes Aspire, Multi-tenancy, AI Agents, and Observability stack.</Description>
     <PackageTags>dotnet-new;templates;clean-architecture;dotnet11;webapi;aspire;postgresql</PackageTags>
     <PackageProjectUrl>https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageReadmeFile>README.nuget.md</PackageReadmeFile>
+    <PackageReleaseNotes>https://github.com/KhaiTrang1995/TechSpherex.CleanArchitecture/blob/main/CHANGELOG.md</PackageReleaseNotes>
     <Version>3.0.0</Version>
-    
+
     <TargetFramework>net11.0</TargetFramework>
+    <!-- This project only packs files. Without this the SDK would try to compile every .cs file in the repo. -->
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <IncludeContentInPack>true</IncludeContentInPack>
     <IncludeBuildOutput>false</IncludeBuildOutput>
     <ContentTargetFolders>content</ContentTargetFolders>
     <NoDefaultExcludes>true</NoDefaultExcludes>
-    <NoWarn>$(NoWarn);NU5128</NoWarn>
+    <!-- NU5128: no lib folder. NU5110/NU5111: scripts/start.ps1 is template content, not a NuGet install script. -->
+    <NoWarn>$(NoWarn);NU5128;NU5110;NU5111</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="**\*" Exclude="**\bin\**;**\obj\**;**\.git\**;**\.vs\**;**\.vscode\**;**\*.nupkg;template.csproj;**\.template.config\**" />
+    <Content Include="**\*" Exclude="**\bin\**;**\obj\**;**\.git\**;.git;**\.vs\**;**\.vscode\**;**\.claude\**;dist\**;src\Backup\**;**\UpgradeLog.htm;**\*.nupkg;template.csproj;README.nuget.md;**\.template.config\**" />
     <Content Include=".template.config\**\*" TargetPath="content\.template.config" />
+    <None Include="README.nuget.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 </Project>
