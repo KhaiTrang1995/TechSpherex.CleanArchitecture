@@ -54,7 +54,7 @@
 ---
 
 ## 🛠️ Tech Stack
-<img width="3038" height="1758" alt="1" src="https://github.com/user-attachments/assets/6de11fac-0a34-4052-9d49-6009b4ee3f3b" />
+<p align="center"><img alt="TechSpherex Clean Architecture Template for .NET 11: layers, what is new in 3.0, and included services" src="docs/assets/architecture-net11.svg" width="100%" /></p>
 
 | Layer | Technology |
 |:------|:-----------|

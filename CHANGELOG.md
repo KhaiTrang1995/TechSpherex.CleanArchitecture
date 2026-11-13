@@ -28,6 +28,8 @@ All notable changes to the TechSpherex Clean Architecture Template will be docum
   `dotnet test --solution src/TechSpherex.CleanArchitecture.slnx`
 - `.config/dotnet-ef.json` supplies project / startup project / context to `dotnet ef` (dotnet-ef 11+)
 - NSubstitute 6, FluentAssertions 8.11, Microsoft.NET.Test.Sdk 18.11
+- `dotnet pack template.csproj` works without extra flags; the package carries MIT license metadata and
+  `README.nuget.md`, and no longer ships `src/Backup` or `UpgradeLog.htm`
 
 ### Windows start script and in-memory mode
 - `scripts/start.ps1` starts the Aspire AppHost on Windows (`-InMemory`, `-Http`, `-NoBuild`)

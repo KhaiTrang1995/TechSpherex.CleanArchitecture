@@ -28,6 +28,10 @@
             "**/*.nupkg",
             "**/node_modules/**",
             ".template.config/**",
+            "dist/**",
+            "src/Backup/**",
+            "**/UpgradeLog.htm",
+            "README.nuget.md",
             "template.csproj"
           ]
         }

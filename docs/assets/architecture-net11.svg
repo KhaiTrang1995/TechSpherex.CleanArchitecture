@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 920" width="1600" height="920" role="img" aria-labelledby="t d" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <title id="t">TechSpherex Clean Architecture Template for .NET 11</title>
+  <desc id="d">Overview diagram: four concentric architecture layers with dependencies pointing inward, what is new in version 3.0, and the infrastructure and services included in the template.</desc>
+  <defs>
+    <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c5cff"/>
+      <stop offset="0.55" stop-color="#6d4aff"/>
+      <stop offset="1" stop-color="#4338ca"/>
+    </linearGradient>
+    <linearGradient id="core" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7c5cff"/>
+      <stop offset="1" stop-color="#4f3bd6"/>
+    </linearGradient>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 10 5 0 10z" fill="#4f3bd6"/>
+    </marker>
+  </defs>
+
+  <!-- frame and card -->
+  <rect width="1600" height="920" rx="28" fill="url(#frame)"/>
+  <rect x="24" y="24" width="1552" height="872" rx="20" fill="#ffffff"/>
+
+  <!-- title -->
+  <text x="800" y="76" text-anchor="middle" font-size="34" font-weight="700" fill="#16151c" letter-spacing="-0.5">TechSpherex Clean Architecture Template</text>
+  <g font-size="15" font-weight="700">
+    <rect x="655" y="92" width="92" height="28" rx="14" fill="#6d4aff"/>
+    <text x="701" y="111" text-anchor="middle" fill="#ffffff">.NET 11</text>
+    <rect x="757" y="92" width="76" height="28" rx="14" fill="#ece8ff"/>
+    <text x="795" y="111" text-anchor="middle" fill="#4f3bd6">C# 15</text>
+    <rect x="843" y="92" width="102" height="28" rx="14" fill="#ece8ff"/>
+    <text x="894" y="111" text-anchor="middle" fill="#4f3bd6">Aspire 13</text>
+  </g>
+
+  <!-- ============ left: layers ============ -->
+  <rect x="56" y="140" width="584" height="724" rx="16" fill="#faf9ff" stroke="#e4dff7"/>
+  <text x="348" y="174" text-anchor="middle" font-size="15" font-weight="700" fill="#6d4aff" letter-spacing="1.6">LAYERED ARCHITECTURE</text>
+
+  <g text-anchor="middle">
+    <circle cx="348" cy="500" r="270" fill="#f1edff" stroke="#c9bdfb" stroke-width="2"/>
+    <text x="348" y="258" font-size="20" font-weight="700" fill="#2a2350">Api</text>
+    <text x="348" y="280" font-size="13.5" fill="#55507a">REST · gRPC · Middleware · Scalar</text>
+
+    <circle cx="348" cy="500" r="205" fill="#e0d8ff" stroke="#b3a3f8" stroke-width="2"/>
+    <text x="348" y="323" font-size="20" font-weight="700" fill="#2a2350">Infrastructure</text>
+    <text x="348" y="345" font-size="13.5" fill="#4b466f">EF Core · Identity · JWT · Cache</text>
+
+    <circle cx="348" cy="500" r="140" fill="#c6b8fd" stroke="#9a86f5" stroke-width="2"/>
+    <text x="348" y="388" font-size="20" font-weight="700" fill="#221b47">Application</text>
+    <text x="348" y="410" font-size="13.5" fill="#3a3463">CQRS · Validators</text>
+
+    <circle cx="348" cy="500" r="78" fill="url(#core)"/>
+    <text x="348" y="497" font-size="21" font-weight="700" fill="#ffffff">Domain</text>
+    <text x="348" y="519" font-size="12.5" fill="#e6e0ff">Entities · Result · Rules</text>
+  </g>
+
+  <!-- inward dependency arrows -->
+  <g stroke="#4f3bd6" stroke-width="2.5" fill="none" marker-end="url(#arrow)">
+    <path d="M608 500H566"/>
+    <path d="M543 500H501"/>
+    <path d="M478 500H438"/>
+    <path d="M88 500H130"/>
+    <path d="M153 500H195"/>
+    <path d="M218 500H258"/>
+  </g>
+
+  <rect x="158" y="800" width="380" height="38" rx="19" fill="#ffffff" stroke="#c9bdfb"/>
+  <text x="348" y="824" text-anchor="middle" font-size="15" font-weight="600" fill="#2a2350">Dependencies point inward — enforced by tests</text>
+
+  <!-- ============ middle: what's new ============ -->
+  <text x="784" y="174" text-anchor="middle" font-size="15" font-weight="700" fill="#0b8a7a" letter-spacing="1.6">NEW IN 3.0</text>
+  <g>
+    <g>
+      <rect x="664" y="190" width="240" height="154" rx="14" fill="#ffffff" stroke="#bfe8e1" stroke-width="1.5"/>
+      <rect x="680" y="206" width="62" height="24" rx="6" fill="#e3f6f2"/>
+      <text x="711" y="223" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0b8a7a">C# 15</text>
+      <text x="680" y="262" font-size="18" font-weight="700" fill="#16151c">Closed Error hierarchy</text>
+      <text x="680" y="288" font-size="14" fill="#55535f">Exhaustive HTTP and gRPC</text>
+      <text x="680" y="308" font-size="14" fill="#55535f">mappings, checked by the</text>
+      <text x="680" y="328" font-size="14" fill="#55535f">compiler</text>
+    </g>
+    <g>
+      <rect x="664" y="360" width="240" height="154" rx="14" fill="#ffffff" stroke="#bfe8e1" stroke-width="1.5"/>
+      <rect x="680" y="376" width="128" height="24" rx="6" fill="#e3f6f2"/>
+      <text x="744" y="393" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0b8a7a">ASP.NET Core 11</text>
+      <text x="680" y="432" font-size="18" font-weight="700" fill="#16151c">OpenAPI 3.2 + zstd</text>
+      <text x="680" y="458" font-size="14" fill="#55535f">Scalar API reference,</text>
+      <text x="680" y="478" font-size="14" fill="#55535f">zstd response compression</text>
+      <text x="680" y="498" font-size="14" fill="#55535f">and request decompression</text>
+    </g>
+    <g>
+      <rect x="664" y="530" width="240" height="154" rx="14" fill="#ffffff" stroke="#bfe8e1" stroke-width="1.5"/>
+      <rect x="680" y="546" width="76" height="24" rx="6" fill="#e3f6f2"/>
+      <text x="718" y="563" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0b8a7a">Tooling</text>
+      <text x="680" y="602" font-size="18" font-weight="700" fill="#16151c">One-command start</text>
+      <text x="680" y="628" font-size="14" fill="#55535f">scripts/start.ps1 runs Aspire;</text>
+      <text x="680" y="648" font-size="14" fill="#55535f">in-memory mode needs</text>
+      <text x="680" y="668" font-size="14" fill="#55535f">no Docker</text>
+    </g>
+    <g>
+      <rect x="664" y="700" width="240" height="164" rx="14" fill="#ffffff" stroke="#bfe8e1" stroke-width="1.5"/>
+      <rect x="680" y="716" width="72" height="24" rx="6" fill="#e3f6f2"/>
+      <text x="716" y="733" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0b8a7a">Quality</text>
+      <text x="680" y="772" font-size="18" font-weight="700" fill="#16151c">Sonar-clean build</text>
+      <text x="680" y="798" font-size="14" fill="#55535f">SonarAnalyzer in every</text>
+      <text x="680" y="818" font-size="14" fill="#55535f">project, xUnit v3 on the new</text>
+      <text x="680" y="838" font-size="14" fill="#55535f">testing platform</text>
+    </g>
+  </g>
+
+  <!-- ============ right: services ============ -->
+  <rect x="928" y="140" width="616" height="724" rx="16" fill="#faf9ff" stroke="#e4dff7"/>
+  <text x="1236" y="174" text-anchor="middle" font-size="15" font-weight="700" fill="#6d4aff" letter-spacing="1.6">INFRASTRUCTURE &amp; SERVICES</text>
+
+  <g font-size="14.5" fill="#2a2350">
+    <!-- Data & cache -->
+    <rect x="948" y="194" width="280" height="180" rx="12" fill="#ffffff" stroke="#e4dff7"/>
+    <text x="968" y="224" font-size="16" font-weight="700" fill="#16151c">Data &amp; cache</text>
+    <g text-anchor="middle">
+      <rect x="964" y="240" width="120" height="36" rx="8" fill="#f1edff"/><text x="1024" y="263">PostgreSQL</text>
+      <rect x="1092" y="240" width="120" height="36" rx="8" fill="#f1edff"/><text x="1152" y="263">EF Core 10</text>
+      <rect x="964" y="284" width="120" height="36" rx="8" fill="#f1edff"/><text x="1024" y="307">Redis</text>
+      <rect x="1092" y="284" width="120" height="36" rx="8" fill="#f1edff"/><text x="1152" y="307">HybridCache</text>
+      <rect x="964" y="328" width="248" height="32" rx="8" fill="#ffffff" stroke="#d9d2f7" stroke-dasharray="4 4"/><text x="1088" y="349" font-size="13" fill="#55507a">in-memory mode for demos</text>
+    </g>
+
+    <!-- Identity & tenancy -->
+    <rect x="1244" y="194" width="280" height="180" rx="12" fill="#ffffff" stroke="#e4dff7"/>
+    <text x="1264" y="224" font-size="16" font-weight="700" fill="#16151c">Identity &amp; tenancy</text>
+    <g text-anchor="middle">
+      <rect x="1260" y="240" width="120" height="36" rx="8" fill="#f1edff"/><text x="1320" y="263">ASP.NET Identity</text>
+      <rect x="1388" y="240" width="120" height="36" rx="8" fill="#f1edff"/><text x="1448" y="263">JWT + refresh</text>
+      <rect x="1260" y="284" width="120" height="36" rx="8" fill="#f1edff"/><text x="1320" y="307">Multi-tenancy</text>
+      <rect x="1388" y="284" width="120" height="36" rx="8" fill="#f1edff"/><text x="1448" y="307">CORS policy</text>
+      <rect x="1260" y="328" width="248" height="32" rx="8" fill="#ffffff" stroke="#d9d2f7" stroke-dasharray="4 4"/><text x="1384" y="349" font-size="13" fill="#55507a">role-based authorization</text>
+    </g>
+
+    <!-- API surface -->
+    <rect x="948" y="390" width="280" height="136" rx="12" fill="#ffffff" stroke="#e4dff7"/>
+    <text x="968" y="420" font-size="16" font-weight="700" fill="#16151c">API surface</text>
+    <g text-anchor="middle">
+      <rect x="964" y="436" width="120" height="36" rx="8" fill="#f1edff"/><text x="1024" y="459">Minimal APIs</text>
+      <rect x="1092" y="436" width="120" height="36" rx="8" fill="#f1edff"/><text x="1152" y="459">gRPC</text>
+      <rect x="964" y="480" width="120" height="36" rx="8" fill="#f1edff"/><text x="1024" y="503">Scalar</text>
+      <rect x="1092" y="480" width="120" height="36" rx="8" fill="#f1edff"/><text x="1152" y="503">ProblemDetails</text>
+    </g>
+
+    <!-- AI & rules -->
+    <rect x="1244" y="390" width="280" height="136" rx="12" fill="#ffffff" stroke="#e4dff7"/>
+    <text x="1264" y="420" font-size="16" font-weight="700" fill="#16151c">AI &amp; rules</text>
+    <g text-anchor="middle">
+      <rect x="1260" y="436" width="120" height="36" rx="8" fill="#f1edff"/><text x="1320" y="459">Skill agents</text>
+      <rect x="1388" y="436" width="120" height="36" rx="8" fill="#f1edff"/><text x="1448" y="459">Orchestrator</text>
+      <rect x="1260" y="480" width="120" height="36" rx="8" fill="#f1edff"/><text x="1320" y="503">Rule engine</text>
+      <rect x="1388" y="480" width="120" height="36" rx="8" fill="#f1edff"/><text x="1448" y="503">LLM-ready</text>
+    </g>
+
+    <!-- Observability -->
+    <rect x="948" y="542" width="576" height="182" rx="12" fill="#ffffff" stroke="#e4dff7"/>
+    <text x="968" y="572" font-size="16" font-weight="700" fill="#16151c">Observability</text>
+    <g text-anchor="middle">
+      <rect x="964" y="588" width="544" height="36" rx="8" fill="#6d4aff"/>
+      <text x="1236" y="611" fill="#ffffff" font-weight="600">.NET Aspire dashboard · OpenTelemetry traces, metrics, logs</text>
+      <rect x="964" y="634" width="266" height="76" rx="8" fill="#f1edff"/>
+      <text x="1097" y="662" font-weight="700">ELK stack</text>
+      <text x="1097" y="686" font-size="13" fill="#55507a">Elasticsearch · Logstash · Kibana</text>
+      <rect x="1242" y="634" width="266" height="76" rx="8" fill="#f1edff"/>
+      <text x="1375" y="662" font-weight="700">Grafana stack</text>
+      <text x="1375" y="686" font-size="13" fill="#55507a">Loki · Tempo · Prometheus · Grafana</text>
+    </g>
+
+    <!-- Delivery -->
+    <rect x="948" y="740" width="576" height="106" rx="12" fill="#ffffff" stroke="#e4dff7"/>
+    <text x="968" y="770" font-size="16" font-weight="700" fill="#16151c">Delivery</text>
+    <g text-anchor="middle">
+      <rect x="964" y="786" width="174" height="44" rx="8" fill="#f1edff"/><text x="1051" y="813">Docker · Alpine image</text>
+      <rect x="1149" y="786" width="174" height="44" rx="8" fill="#f1edff"/><text x="1236" y="813">Native AOT option</text>
+      <rect x="1334" y="786" width="174" height="44" rx="8" fill="#f1edff"/><text x="1421" y="813">Compose profiles</text>
+    </g>
+  </g>
+</svg>
